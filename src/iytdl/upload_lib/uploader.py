@@ -115,7 +115,7 @@ class Uploader:
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
+                Pass "ParseMode.HTML" to enable HTML-style parsing only.
                 Pass None to completely disable style parsing. (Defaults to `"ParseMode.HTML"`)
 
         Returns:
@@ -245,7 +245,7 @@ class Uploader:
             uploaded := await client.send_audio(
                 chat_id=self.log_group_id,
                 caption=f"🎵  {caption}",
-                parse_mode="HTML",
+                parse_mode=ParseMode.HTML,
                 disable_notification=True,
                 progress=upload_progress if with_progress else None,
                 progress_args=(client, process, mkwargs["file_name"])
