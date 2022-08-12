@@ -51,7 +51,7 @@ async def progress(
         try:
             await process.edit(f"`Finalizing {mode} process ...`")
         except FloodWait as f_w:
-            await asyncio.sleep(f_w.x + 2)
+            await asyncio.sleep(f_w.value + 2)
         return
     now = int(time.time())
     if process.id not in _PROGRESS:
@@ -79,7 +79,7 @@ async def progress(
         try:
             await process.edit(progress, reply_markup=process.cancel_markup)
         except FloodWait as f:
-            await asyncio.sleep(f.x + 2)
+            await asyncio.sleep(f.value + 2)
         except (ContinuePropagation, MessageNotModified):
             pass
         except (StopPropagation, StopTransmission) as p_e:

@@ -10,6 +10,7 @@ from typing import Any, Dict, Literal, Optional, Union
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pyrogram import Client
+from pyrogram.enums import ParseMode
 from pyrogram.types import (
     CallbackQuery,
     InputMediaAudio,
@@ -101,7 +102,7 @@ class Uploader:
         key: str,
         media_type: Literal["audio", "video"],
         caption: str,
-        parse_mode: Optional[str] = "HTML",
+        parse_mode: Optional[str] = ParseMode.HTML,
     ) -> Union[InputMediaAudio, InputMediaVideo, None]:
         """Get Input Media
 
@@ -115,7 +116,7 @@ class Uploader:
                 You can combine both syntaxes together.
                 Pass "markdown" or "md" to enable Markdown-style parsing only.
                 Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing. (Defaults to `"HTML"`)
+                Pass None to completely disable style parsing. (Defaults to `"ParseMode.HTML"`)
 
         Returns:
         -------
@@ -203,7 +204,7 @@ class Uploader:
             uploaded := await client.send_video(
                 chat_id=self.log_group_id,
                 caption=f"📹  {caption}",
-                parse_mode="HTML",
+                parse_mode=ParseMode.HTML,
                 disable_notification=True,
                 progress=upload_progress if with_progress else None,
                 progress_args=(client, process, mkwargs["file_name"])

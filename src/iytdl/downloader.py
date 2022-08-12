@@ -14,6 +14,7 @@ import yt_dlp as youtube_dl
 from pyrogram import ContinuePropagation, StopPropagation, StopTransmission
 from pyrogram.errors import FloodWait, MessageNotModified
 from pyrogram.types import CallbackQuery, Message
+from pyrogram.enums import ParseMode
 
 # from youtube_dl.utils import DownloadError, GeoRestrictedError
 from yt_dlp.utils import DownloadError, GeoRestrictedError
@@ -196,12 +197,12 @@ class Downloader:
         try:
             await process.edit(
                 text=text,
-                parse_mode="HTML",
+                parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True,
                 reply_markup=process.cancel_markup,
             )
         except FloodWait as f:
-            await asyncio.sleep(f.x + 2)
+            await asyncio.sleep(f.value + 2)
         except (StopPropagation, StopTransmission) as p_e:
             raise p_e
         except (ContinuePropagation, MessageNotModified):
