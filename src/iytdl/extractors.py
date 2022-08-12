@@ -22,8 +22,9 @@ logger = logging.getLogger(__name__)
 
 
 class Extractor:
-    def __init__(self, silent: bool = False) -> None:
+    def __init__(self, silent: bool = False, default_thumb: str = None) -> None:
         self.silent = silent
+        self.default_thumb = default_thumb
 
     @run_sync
     def generic_extractor(self, key: str, url: str) -> Optional[SearchResult]:
