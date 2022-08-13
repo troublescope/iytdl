@@ -153,7 +153,14 @@ class Downloader:
                     return
                 current = prog_data.get("downloaded_bytes")
                 filename = prog_data.get("filename")
-                if total := prog_data.get("total_bytes"):
+                if prog_data.get("total_bytes"):
+                    total = prog_data["total_bytes"]
+                elif prog_data.get('total_bytes_estimate'):
+                    total = prog_data['total_bytes_estimate']
+                else:
+                    total = None
+                
+                if total is not None:
                     percentage = round(current / total * 100)
                     progress_bar = (
                         f"[{'█' * floor(15 * percentage / 100)}"
