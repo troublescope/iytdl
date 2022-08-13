@@ -203,7 +203,7 @@ class Uploader:
         if not (
             uploaded := await client.send_video(
                 chat_id=self.log_group_id,
-                caption=f"📹  {caption}",
+                caption=f"📹  <code>{caption}</code>",
                 parse_mode=ParseMode.HTML,
                 disable_notification=True,
                 progress=upload_progress if with_progress else None,
@@ -244,7 +244,7 @@ class Uploader:
         if not (
             uploaded := await client.send_audio(
                 chat_id=self.log_group_id,
-                caption=f"🎵  {caption}",
+                caption=f"🎵  <code>{caption}</code>",
                 parse_mode=ParseMode.HTML,
                 disable_notification=True,
                 progress=upload_progress if with_progress else None,
