@@ -107,7 +107,7 @@ async def take_screen_shot(
     if ttl == -1:
         try:
             get_duration = [
-                kwargs.get("ffprobe", "ffprobe"),
+                str(kwargs.get("ffprobe", "ffprobe")),
                 "-i",
                 vid_path,
                 "-v",
