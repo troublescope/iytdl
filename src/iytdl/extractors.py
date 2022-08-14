@@ -26,6 +26,9 @@ class Extractor:
         self.silent = silent
         self.default_thumb = default_thumb
 
+    def get_response(self, params, url):
+        return youtube_dl.YoutubeDL(params).extract_info(url, download=False)
+
     @run_sync
     def generic_extractor(self, key: str, url: str) -> Optional[SearchResult]:
         """Generic extractor for URLs other than YouTube
@@ -53,7 +56,7 @@ class Extractor:
         ]
         params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent}
         try:
-            resp = youtube_dl.YoutubeDL(params).extract_info(url, download=False)
+            resp = self.get_response(params, url)
             # with open("j_debug_data.json", "w") as fx:
             #     json.dump(resp, fx, indent=4, sort_keys=True)
         except UnsupportedError:
@@ -185,9 +188,7 @@ class Extractor:
         ]
         params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent}
         try:
-            vid_data = youtube_dl.YoutubeDL(params).extract_info(
-                f"{YT_VID_URL}{yt_id}", download=False
-            )
+            vid_data = self.get_response(params, f"{YT_VID_URL}{yt_id}")
         except ExtractorError:
             vid_data = None
             buttons += best_audio_btn
