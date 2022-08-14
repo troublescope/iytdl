@@ -126,7 +126,7 @@ async def take_screen_shot(
         except Exception:
             return
     cmd = [
-        kwargs.get("ffmpeg", "ffmpeg"),
+        str(kwargs.get("ffmpeg", "ffmpeg")),
         "-hide_banner",
         "-loglevel error",
         "-ss",

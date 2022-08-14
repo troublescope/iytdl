@@ -37,6 +37,7 @@ class iYTDL(Extractor, Downloader, Uploader):
         delete_media: bool = False,
         external_downloader: Optional[types.ExternalDownloader] = None,
         ffmpeg_location: str = "ffmpeg",
+        ffprobe_location: str = "ffprobe",
     ) -> None:
         """Main class
 
@@ -77,7 +78,14 @@ class iYTDL(Extractor, Downloader, Uploader):
             ffmpeg_location = Path(ffmpeg_location)
             if not ffmpeg_location.is_file():
                 raise FileNotFoundError(ffmpeg_location)
+
+        if ffprobe_location != "ffprobe":
+            ffprobe_location = Path(ffprobe_location)
+            if not ffprobe_location.is_file():
+                raise FileNotFoundError(ffprobe_location)
+        
         self._ffmpeg = ffmpeg_location
+        self._ffprobe = ffprobe_location
         super().__init__(silent=silent)
 
     @classmethod
@@ -334,15 +342,13 @@ class iYTDL(Extractor, Downloader, Uploader):
         return link
 
     async def _check_ffmpeg(self) -> None:
+        ffmpeg = self._ffmpeg
         if isinstance(self._ffmpeg, Path):
-            ffmpeg = self._ffmpeg
-            _ffprobe = self._ffmpeg.parent.joinpath(
-                f"ffprobe{'.exe' if isinstance(self._ffmpeg, WindowsPath) else ''}"
-            )
+            _ffprobe = self._ffmpeg.parent.joinpath(f"{self._ffprobe}{'.exe' if isinstance(self._ffmpeg, WindowsPath) else ''}")
             ffprobe = _ffprobe if _ffprobe.is_file() else None
         else:
-            ffmpeg = "ffmpeg"
-            ffprobe = "ffprobe"
+            ffprobe = self._ffprobe
+    
         out_1 = await run_command(f"{ffmpeg} -version", shell=True)
         if out_1[1] != 0:
             raise ValueError(f"'{ffmpeg}' was not Found !")
