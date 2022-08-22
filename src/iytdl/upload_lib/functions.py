@@ -1,13 +1,13 @@
 __all__ = ["unquote_filename", "thumb_from_audio", "covert_to_jpg", "take_screen_shot"]
 
 import re
+import logging
+import mutagen
 
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Optional, Tuple, Union
 from math import ceil
-
-import mutagen
 
 from PIL import Image
 
@@ -146,7 +146,8 @@ async def split_video(file_path, **kwargs: Any):
     start, cur_duration, limit, result = 1, 0, 2000000000, []
     file = Path(file_path)
     dur = await get_duration(file_path)
-    split_size = ceil(file.stat().st_size / ceil(file.stat().st_size / limit)) + 1000
+    parts = ceil(file.stat().st_size / limit)
+    split_size = ceil(file.stat().st_size / parts) + 1000
     while cur_duration >= dur:
         new_file = file.parent.joinpath("{name}.part{no}{ext}".format(name=file.stem, no=str(start).zfill(3), ext=file.suffix))
         cmd = [
@@ -169,4 +170,6 @@ async def split_video(file_path, **kwargs: Any):
         rt_code = (await run_command(" ".join(cmd), shell=True))[1]
         if rt_code == 0 and new_file.is_file():
             result.append(unquote_filename(new_file))
+        logging.info(f"Duration of {new_file} : {new_duration}")
+        logging.info(f"Part No. {start} starts at {cur_duration}")
     return sorted(result)
