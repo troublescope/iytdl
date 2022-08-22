@@ -87,10 +87,10 @@ def covert_to_jpg(filename: Union[Path, str]) -> Tuple[str, Tuple[int]]:
 
 async def get_duration(vid_path, **kwargs):
     try:
-        get_duration = [
+        cmd = [
             str(kwargs.get("ffprobe", "ffprobe")),
             "-i",
-            vid_path,
+            str(vid_path),
             "-v",
             "quiet",
             "-show_entries",
@@ -99,7 +99,7 @@ async def get_duration(vid_path, **kwargs):
             "-of",
             "default=noprint_wrappers=1:nokey=1",
         ]
-        _dur, _rt_code = await run_command(" ".join(get_duration), shell=True)
+        _dur, _rt_code = await run_command(" ".join(cmd), shell=True)
         return 0 if _rt_code != 0 else int(float(_dur))
     except Exception:
         return 0
