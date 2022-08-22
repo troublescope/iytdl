@@ -100,7 +100,7 @@ async def get_duration(vid_path, **kwargs):
             "-of",
             "default=noprint_wrappers=1:nokey=1",
         ]
-        _dur, _rt_code = await run_command(" ".join(cmd), shell=True)
+        _dur, _rt_code = await run_command(" ".join(cmd), shell=True, silent=True)
         return 0 if _rt_code != 0 else int(float(_dur))
     except Exception:
         return 0
@@ -137,7 +137,7 @@ async def take_screen_shot(
         "1",
         f'"{str(ss_path)}"',
     ]
-    rt_code = (await run_command(" ".join(cmd), shell=True))[1]
+    rt_code = (await run_command(" ".join(cmd), shell=True, silent=True))[1]
     if rt_code == 0 and ss_path.is_file():
         return str(ss_path)
 
@@ -164,7 +164,7 @@ async def split_video(file_path, **kwargs: Any):
             "copy", 
             f'"{str(new_file)}"'
         ]
-        rt_code = (await run_command(" ".join(cmd), shell=True))[1]
+        rt_code = (await run_command(" ".join(cmd), shell=True, silent=True))[1]
         if rt_code == 0 and new_file.is_file():
             result.append(unquote_filename(new_file))
         new_duration = await get_duration(new_file)
