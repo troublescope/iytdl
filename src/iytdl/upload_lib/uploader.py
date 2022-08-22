@@ -161,6 +161,7 @@ class Uploader:
         """
         if not (mkwargs := await self.find_media(key, downtype)):
             return
+        self.msg = update
         process = Process(update, cb_extra=cb_extra)
         try:
             if downtype == "video":
@@ -198,6 +199,7 @@ class Uploader:
         is_split = mkwargs.get('is_split')
         caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
         if is_split:
+            await process.edit("`File is Splitted...`")
             async def send_video(c, p, g_id, file, file_name, caption, with_progress, **mkwargs):
                 m = await c.send_video(
                     chat_id=g_id,
@@ -248,7 +250,7 @@ class Uploader:
             else:
                 new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
                 for i, upload_msg in enumerate(uploaded, start=1):
-                    await asyncio.gather(upload_msg.copy(process.chat.id, reply_markup=None), asyncio.sleep(2))
+                    await asyncio.gather(upload_msg.copy(self.msg.chat.id, reply_markup=None), asyncio.sleep(2))
                     name = upload_msg.document or upload_msg.video
                     new_caption += f"{i}. <a href={upload_msg.link}>{name.file_name}</a>\n"
                 return await process.edit(new_caption)
