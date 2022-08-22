@@ -85,6 +85,24 @@ def covert_to_jpg(filename: Union[Path, str]) -> Tuple[str, Tuple[int]]:
         size = img.size
     return thumb_path, size
 
+async def get_duration(vid_path, **kwargs):
+    try:
+        get_duration = [
+            str(kwargs.get("ffprobe", "ffprobe")),
+            "-i",
+            vid_path,
+            "-v",
+            "quiet",
+            "-show_entries",
+            "format=duration",
+            "-hide_banner",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
+        ]
+        _dur, _rt_code = await run_command(" ".join(get_duration), shell=True)
+        return 0 if _rt_code != 0 else int(float(_dur))
+    except Exception:
+        return 0
 
 async def take_screen_shot(
     video_file: str, ttl: int = -1, **kwargs: Any
@@ -105,26 +123,7 @@ async def take_screen_shot(
     ss_path = file.parent.joinpath(f"{file.stem}.jpg")
     vid_path = f'"{video_file}"'
     if ttl == -1:
-        try:
-            get_duration = [
-                str(kwargs.get("ffprobe", "ffprobe")),
-                "-i",
-                vid_path,
-                "-v",
-                "quiet",
-                "-show_entries",
-                "format=duration",
-                "-hide_banner",
-                "-of",
-                "default=noprint_wrappers=1:nokey=1",
-            ]
-            _dur, _rt_code = await run_command(" ".join(get_duration), shell=True)
-
-            if _rt_code != 0:
-                return
-            ttl = int(float(_dur)) // 2
-        except Exception:
-            return
+        ttl = (await get_duration(vid_path, **kwargs)) // 2
     cmd = [
         str(kwargs.get("ffmpeg", "ffmpeg")),
         "-hide_banner",
@@ -140,3 +139,32 @@ async def take_screen_shot(
     rt_code = (await run_command(" ".join(cmd), shell=True))[1]
     if rt_code == 0 and ss_path.is_file():
         return str(ss_path)
+
+
+async def split_video(file_path, **kwargs: Any):
+    start, cur_duration, limit, result = 1, 0, 2000000000, []
+    file = Path(file_path)
+    dur = await get_duration(file_path)
+    while dur != new_duration:
+        new_file = file.parent.joinpath("{name}.part{no}{ext}".format(name=file.stem, no=str(start), ext=file.suffix))
+        cmd = [
+            str(kwargs.get("ffmpeg", "ffmpeg")),
+            "-i",
+            f"'{file_path}'",
+            "-ss",
+            str(cur_duration),
+            "-fs",
+            str(limit), 
+            "-map_chapters", 
+            "-1", 
+            "-c", 
+            "copy",
+            new_file
+        ]
+        new_duration = await get_duration(new_file)
+        cur_duration += new_duration
+        start += 1
+        rt_code = (await run_command(" ".join(cmd), shell=True))[1]
+        if rt_code == 0 and new_file.is_file():
+            result.append(unquote_filename(new_file))
+    return sorted(result)

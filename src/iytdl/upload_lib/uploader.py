@@ -9,6 +9,7 @@ from typing import Any, Dict, Literal, Optional, Union
 
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
+from iytdl.upload_lib.functions import split_video
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.types import (
@@ -30,8 +31,8 @@ logger = logging.getLogger(__name__)
 
 
 class Uploader:
-    @run_sync
-    def find_media(
+    
+    async def find_media(
         self, key: str, media_type: Literal["audio", "video"]
     ) -> Dict[str, Any]:
         """Search Downloaded files for thumbnail and media
@@ -57,20 +58,17 @@ class Uploader:
             raise FileNotFoundError(f"'{media_path}' doesn't exist !")
         info_dict: Dict = {}
         for file in media_path.iterdir():
-            if (
-                not info_dict.get(media_type)
-                and file.name.lower().endswith(getattr(ext, media_type))
-                and file.stat().st_size != 0
-            ):
-                if (
-                    file.stat().st_size > 2147000000
-                ):  # 2 * 1024 * 1024 * 1024 = 2147483648
-                    raise ValueError(
-                        f"[{file}] will not be uploaded as filesize exceeds '2 GB' !"
-                    )
-                f_path = unquote_filename(file)
+            if (not info_dict.get(media_type) and file.name.lower().endswith(getattr(ext, media_type)) and file.stat().st_size != 0):
+                if file.stat().st_size > 2147000000 and media_type == 'video':  # 2 * 1024 * 1024 * 1024 = 2147483648
+                    # raise ValueError(f"[{file}] will not be uploaded as filesize exceeds '2 GB', file size is {file.stat().st_size} !")
+                    f_path = await split_video(file)
+                    info_dict["file_name"] = sorted([os.path.basename(f) for f in f_path])
+                    info_dict["is_split"] = True
+                else:
+                    f_path = unquote_filename(file)
+                    info_dict["file_name"] = os.path.basename(f_path)
+                    info_dict["is_split"] = False
                 info_dict[media_type] = f_path
-                info_dict["file_name"] = os.path.basename(f_path)
             if not info_dict.get("thumb") and file.name.lower().endswith(ext.photo):
                 info_dict["thumb"], info_dict["size"] = covert_to_jpg(file)
 
@@ -161,31 +159,28 @@ class Uploader:
         -------
             `Union[CallbackQuery, Message]`: On Success
         """
-        if mkwargs := await self.find_media(key, downtype):
-
-            if caption_link:
-                caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>"
-            else:
-                caption = mkwargs["file_name"]
-            process = Process(update, cb_extra=cb_extra)
-            try:
-                if downtype == "video":
-                    return await self.__upload_video(
-                        client, process, caption, mkwargs, with_progress
-                    )
-                if downtype == "audio":
-                    return await self.__upload_audio(
-                        client, process, caption, mkwargs, with_progress
-                    )
-            finally:
-                if self.delete_file_after_upload:
-                    rmtree(self.download_path.joinpath(key), ignore_errors=True)
+        if not (mkwargs := await self.find_media(key, downtype)):
+            return
+        process = Process(update, cb_extra=cb_extra)
+        try:
+            if downtype == "video":
+                return await self.__upload_video(
+                    client, process, caption_link, mkwargs, with_progress
+                )
+            if downtype == "audio":
+                return await self.__upload_audio(
+                    client, process, caption_link, mkwargs, with_progress
+                )
+        finally:
+            if self.delete_file_after_upload:
+                rmtree(self.download_path.joinpath(key), ignore_errors=True)
 
     async def __upload_video(
         self,
         client: Client,
         process: Process,
-        caption: str,
+        caption_link: str,
+
         mkwargs: Dict[str, Any],
         with_progress: bool = True,
     ):
@@ -200,60 +195,85 @@ class Uploader:
                 ffprobe=getattr(self, "_ffprobe", None),
             )
 
-        if not (
-            uploaded := await client.send_video(
+        is_split = mkwargs.get('is_split')
+        caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
+        if is_split:
+            async def send_video(c, p, g_id, file, file_name, caption, with_progress, **mkwargs):
+                m = await c.send_video(
+                    chat_id=g_id,
+                    video = file,
+                    caption=f"📹  {caption}",
+                    parse_mode=ParseMode.HTML,
+                    disable_notification=True,
+                    progress=upload_progress if with_progress else None,
+                    progress_args=(c, p, file_name) if with_progress else (),
+                    **mkwargs
+                )
+                await asyncio.sleep(2)
+                return m 
+            
+            tasks = []
+            for file, file_name in zip(mkwargs.pop('video'), mkwargs.pop('file_name')):
+                tasks.append(asyncio.create_task(send_video(client, process, self.log_group_id, file, file_name, caption, with_progress, **mkwargs)))
+            uploaded = await asyncio.gather(*tasks)
+        else:
+            uploaded = await client.send_video(
                 chat_id=self.log_group_id,
-                caption=f"📹  <code>{caption}</code>",
+                caption=f"📹  {caption}",
                 parse_mode=ParseMode.HTML,
                 disable_notification=True,
                 progress=upload_progress if with_progress else None,
-                progress_args=(client, process, mkwargs["file_name"])
-                if with_progress
-                else (),
-                **mkwargs,
+                progress_args=(client, process, mkwargs["file_name"]) if with_progress else (),
+                **mkwargs
             )
-        ):
-
+        if not uploaded:
             return
         await asyncio.sleep(2)
         if not process.is_cancelled:
-            if uploaded.video:
-
-                return await process.edit_media(
-                    media=InputMediaVideo(
-                        uploaded.video.file_id, caption=uploaded.caption.html
-                    ),
-                    reply_markup=None,
-                )
-            elif uploaded.document:
-                return await process.edit_media(
-                    media=InputMediaDocument(
-                        uploaded.document.file_id, caption=uploaded.caption.html
-                    ),
-                    reply_markup=None,
-                )
+            if not is_split:
+                if uploaded.video:
+                    return await process.edit_media(
+                        media=InputMediaVideo(
+                            uploaded.video.file_id, caption=uploaded.caption.html
+                        ),
+                        reply_markup=None,
+                    )
+                elif uploaded.document:
+                    return await process.edit_media(
+                        media=InputMediaDocument(
+                            uploaded.document.file_id, caption=uploaded.caption.html
+                        ),
+                        reply_markup=None,
+                    )
+            else:
+                new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
+                for i, upload_msg in enumerate(uploaded, start=1):
+                    await asyncio.gather(upload_msg.copy(process.chat.id, reply_markup=None), asyncio.sleep(2))
+                    name = upload_msg.document or upload_msg.video
+                    new_caption += f"{i}. <a href={upload_msg.link}>{name.file_name}</a>\n"
+                await process.edit(new_caption)
 
     async def __upload_audio(
         self,
         client: Client,
         process: Process,
-        caption: str,
+        caption_link: str,
         mkwargs: Dict[str, Any],
         with_progress: bool = True,
     ):
-        if not (
-            uploaded := await client.send_audio(
-                chat_id=self.log_group_id,
-                caption=f"🎵  <code>{caption}</code>",
-                parse_mode=ParseMode.HTML,
-                disable_notification=True,
-                progress=upload_progress if with_progress else None,
-                progress_args=(client, process, mkwargs["file_name"])
-                if with_progress
-                else (),
-                **mkwargs,
-            )
-        ):
+        caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
+        uploaded = await client.send_audio(
+            chat_id=self.log_group_id,
+            caption=f"🎵  {caption}",
+            parse_mode=ParseMode.HTML,
+            disable_notification=True,
+            progress=upload_progress if with_progress else None,
+            progress_args=(client, process, mkwargs["file_name"])
+            if with_progress
+            else (),
+            **mkwargs,
+        )
+        if not uploaded:
             return
         await asyncio.sleep(2)
         if not process.is_cancelled:

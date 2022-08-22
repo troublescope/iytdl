@@ -1,7 +1,7 @@
 # YouTube
 YT = "https://www.youtube.com/"
-YT_VID_URL = YT + "watch?v="
-YT_CHANNEL_URL = YT + "channel/"
+YT_VID_URL = f"{YT}watch?v="
+YT_CHANNEL_URL = f"{YT}channel/"
 
 # Telega.ph
 TELEGRA_PH = "https://telegra.ph"
