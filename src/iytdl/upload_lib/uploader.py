@@ -77,7 +77,7 @@ class Uploader:
             if media_type in info_dict and "thumb" in info_dict:
                 break
 
-        if media := info_dict.get("real_file"):
+        if media := info_dict.pop("real_file"):
             metadata = extractMetadata(createParser(media))
             if metadata and metadata.has("duration"):
                 info_dict["duration"] = metadata.get("duration").seconds
