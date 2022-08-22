@@ -202,7 +202,7 @@ class Uploader:
         caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
         if is_split:
             await process.edit("`File is Splitted...`")
-            async def send_video(c, p, g_id, file, file_name, caption, with_progress, **mkwargs):
+            async def send_video(c, p, g_id, file, file_name, caption, with_progress, total_file=None, **mkwargs):
                 m = await c.send_video(
                     chat_id=g_id,
                     video = file,
@@ -210,7 +210,7 @@ class Uploader:
                     parse_mode=ParseMode.HTML,
                     disable_notification=True,
                     progress=upload_progress if with_progress else None,
-                    progress_args=(c, p, file_name) if with_progress else (),
+                    progress_args=(c, p, file_name, total_file) if with_progress else (),
                     **mkwargs
                 )
                 await asyncio.sleep(2)
