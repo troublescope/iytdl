@@ -71,7 +71,8 @@ async def progress(
         progress = f"""
 <i>{mode.title()}ing:</i>  <code>{filename}</code>
 <b>Completed:</b>  <code>{humanbytes(current)} / {humanbytes(total)}</code>
-<b>Progress:</b>  <code>{progress_bar} {percentage} % [ {x} / {y} ]</code>
+<b>Files:</b>  <code>[ {x} / {y} ]</code>
+<b>Progress:</b>  <code>{progress_bar} {percentage} %</code>
 <b>Speed:</b>  <code>{humanbytes(speed)}</code>
 <b>ETA:</b>  <code>{time_formater(eta)}</code>
 """
