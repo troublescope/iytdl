@@ -90,7 +90,7 @@ async def get_duration(vid_path, **kwargs):
         cmd = [
             str(kwargs.get("ffprobe", "ffprobe")),
             "-i",
-            str(vid_path),
+            f'"{str(vid_path)}"',
             "-v",
             "quiet",
             "-show_entries",
@@ -134,7 +134,7 @@ async def take_screen_shot(
         vid_path,
         "-vframes",
         "1",
-        f'"{ss_path}"',
+        f'"{str(ss_path)}"',
     ]
     rt_code = (await run_command(" ".join(cmd), shell=True))[1]
     if rt_code == 0 and ss_path.is_file():
@@ -159,7 +159,7 @@ async def split_video(file_path, **kwargs: Any):
             "-1", 
             "-c", 
             "copy",
-            str(new_file)
+            f'"{str(new_file)}"'
         ]
         new_duration = await get_duration(new_file)
         cur_duration += new_duration

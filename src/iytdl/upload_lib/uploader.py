@@ -196,7 +196,7 @@ class Uploader:
                 ffprobe=getattr(self, "_ffprobe", None),
             )
 
-        is_split = mkwargs.get('is_split')
+        is_split = mkwargs.pop('is_split')
         caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
         if is_split:
             await process.edit("`File is Splitted...`")
