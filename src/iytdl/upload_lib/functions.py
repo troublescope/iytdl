@@ -147,7 +147,7 @@ async def split_video(file_path, **kwargs: Any):
     file = Path(file_path)
     parts = ceil(file.stat().st_size / limit)
     split_size = ceil(file.stat().st_size / parts) + 1000
-    while start != parts:
+    while start <= parts:
         new_file = file.parent.joinpath("{name}.part{no}{ext}".format(name=file.stem, no=str(start).zfill(3), ext=file.suffix))
 
         cmd = [
