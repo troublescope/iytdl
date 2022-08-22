@@ -210,7 +210,7 @@ class Uploader:
                     parse_mode=ParseMode.HTML,
                     disable_notification=True,
                     progress=upload_progress if with_progress else None,
-                    progress_args=(c, p, file_name, total_file) if with_progress else (),
+                    progress_args=(c, p, file_name, "upload", 8, total_file) if with_progress else (),
                     **mkwargs
                 )
                 await asyncio.sleep(2)
@@ -221,7 +221,11 @@ class Uploader:
             nums = 1
             for file, file_name in zip(videos, videos_name):
                 total_file = {'all_videos': len(videos), 'now_video': nums}
-                tasks.append(asyncio.create_task(send_video(client, process, self.log_group_id, file, file_name, caption, with_progress, total_file=total_file, **mkwargs)))
+                tasks.append(
+                    asyncio.create_task(
+                        send_video(client, process, self.log_group_id, file, file_name, caption, with_progress, total_file=total_file, **mkwargs)
+                    )
+                )
                 nums += 1
             uploaded = await asyncio.gather(*tasks)
         else:
