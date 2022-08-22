@@ -19,14 +19,15 @@ LOG = logging.getLogger(__name__)
 
 
 async def progress(
-    current: int,
-    total: int,
-    client: Client,
-    process: Process,
-    filename: str,
-    mode: str = "upload",
-    edit_rate: int = 8,
-):
+        current: int, 
+        total: int, 
+        client: Client, 
+        process: Process, 
+        filename: str, 
+        mode: str = "upload", 
+        edit_rate: int = 8, 
+        total_file: dict = None
+    ):
     """Pyrogram Upload / Download Progress Bar
 
     Parameters:
@@ -41,10 +42,12 @@ async def progress(
     """
     if process.is_cancelled:
         LOG.warning("Upload process is Cancelled")
-        # Stop Uploading
         await client.stop_transmission()
-
-    if current == total:
+    if total_file:
+        x, y = total_file.get('all_videos'), total_file.get('now_video')
+    else:
+        x, y = 1, 1
+    if x == y and current == total:
         if process.id not in _PROGRESS:
             return
         del _PROGRESS[process.id]
@@ -55,20 +58,16 @@ async def progress(
         return
     now = int(time.time())
     if process.id not in _PROGRESS:
-        _PROGRESS[process.id] = (now, now)
+        _PROGRESS[process.id] = now, now
     start, last_update_time = _PROGRESS[process.id]
-    # ------------------------------------ #
-    if (now - last_update_time) >= edit_rate:
-        _PROGRESS[process.id] = (start, now)
-        # Only edit message once every 8 seconds to avoid ratelimits
+    if now - last_update_time >= edit_rate:
+        _PROGRESS[process.id] = start, now
         after = now - start
         speed = current / after
         eta = round((total - current) / speed)
         percentage = round(current / total * 100)
-        progress_bar = (
-            f"[{'█' * floor(15 * percentage / 100)}"
-            f"{'░' * floor(15 * (1 - percentage / 100))}]"
-        )
+        progress_bar = f"[{'█' * floor(15 * percentage / 100)}{'░' * floor(15 * (1 - percentage / 100))}]"
+
         progress = f"""
 <i>{mode.title()}ing:</i>  <code>{filename}</code>
 <b>Completed:</b>  <code>{humanbytes(current)} / {humanbytes(total)}</code>
@@ -76,6 +75,7 @@ async def progress(
 <b>Speed:</b>  <code>{humanbytes(speed)}</code>
 <b>ETA:</b>  <code>{time_formater(eta)}</code>
 """
+
         try:
             await process.edit(progress, reply_markup=process.cancel_markup)
         except FloodWait as f:

@@ -217,8 +217,10 @@ class Uploader:
                 return m 
             
             tasks = []
-            for file, file_name in zip(mkwargs.pop('video'), mkwargs.pop('file_name')):
-                tasks.append(asyncio.create_task(send_video(client, process, self.log_group_id, file, file_name, caption, with_progress, **mkwargs)))
+            videos, videos_name = mkwargs.pop('video'), mkwargs.pop('file_name')
+            for nums, file, file_name in enumerate(zip(videos, videos_name), start=1):
+                total_file = {'all_videos': len(videos), 'now_video': nums}
+                tasks.append(asyncio.create_task(send_video(client, process, self.log_group_id, file, file_name, caption, with_progress, total_file=total_file, **mkwargs)))
             uploaded = await asyncio.gather(*tasks)
         else:
             uploaded = await client.send_video(

@@ -149,7 +149,8 @@ async def split_video(file_path, **kwargs: Any):
     split_size = ceil(file.stat().st_size / parts) + 1000
     while start <= parts:
         new_file = file.parent.joinpath("{name}.part{no}{ext}".format(name=file.stem, no=str(start).zfill(3), ext=file.suffix))
-
+        logging.info(f"Duration of {new_file} : {new_duration}")
+        logging.info(f"Part No. {start} starts at {cur_duration}")
         cmd = [
             str(kwargs.get("ffmpeg", "ffmpeg")), 
             "-i", 
@@ -170,7 +171,5 @@ async def split_video(file_path, **kwargs: Any):
         new_duration = await get_duration(new_file)
         cur_duration += new_duration
         start += 1
-        logging.info(f"Duration of {new_file} : {new_duration}")
-        logging.info(f"Part No. {start} starts at {cur_duration}")
     logging.info(f"File Splitted To : {len(result)}")
     return sorted(result)
