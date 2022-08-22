@@ -251,7 +251,7 @@ class Uploader:
                     await asyncio.gather(upload_msg.copy(process.chat.id, reply_markup=None), asyncio.sleep(2))
                     name = upload_msg.document or upload_msg.video
                     new_caption += f"{i}. <a href={upload_msg.link}>{name.file_name}</a>\n"
-                await process.edit(new_caption)
+                return await process.edit(new_caption)
 
     async def __upload_audio(
         self,
