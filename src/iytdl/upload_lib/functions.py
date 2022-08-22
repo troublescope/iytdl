@@ -159,7 +159,7 @@ async def split_video(file_path, **kwargs: Any):
             "-1", 
             "-c", 
             "copy",
-            new_file
+            str(new_file)
         ]
         new_duration = await get_duration(new_file)
         cur_duration += new_duration
