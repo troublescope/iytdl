@@ -172,4 +172,5 @@ async def split_video(file_path, **kwargs: Any):
         start += 1
         logging.info(f"Duration of {new_file} : {new_duration}")
         logging.info(f"Part No. {start} starts at {cur_duration}")
+    logging.info(f"File Splitted To : {len(result)}")
     return sorted(result)
