@@ -163,7 +163,7 @@ class Uploader:
         """
         if not (mkwargs := await self.find_media(key, downtype)):
             return
-        self.msg = update
+        self.msg = update.message if hasattr(update, 'message') else update
         process = Process(update, cb_extra=cb_extra)
         try:
             if downtype == "video":
@@ -199,10 +199,11 @@ class Uploader:
             )
 
         is_split = mkwargs.pop('is_split')
-        caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
+
         if is_split:
             await process.edit("`File is Splitted...`")
             async def send_video(c, p, g_id, file, file_name, caption, with_progress, total_file=None, **mkwargs):
+                logger.info(f"Upload : {file}")
                 m = await c.send_video(
                     chat_id=g_id,
                     video = file,
@@ -220,6 +221,7 @@ class Uploader:
             videos, videos_name = mkwargs.pop('video'), mkwargs.pop('file_name')
             nums = 1
             for file, file_name in zip(videos, videos_name):
+                caption = f"<a href={caption_link}>{file_name}</a>" if caption_link else f"<code>{file_name}</code>"
                 total_file = {'all_videos': len(videos), 'now_video': nums}
                 tasks.append(
                     asyncio.create_task(
@@ -229,6 +231,7 @@ class Uploader:
                 nums += 1
             uploaded = await asyncio.gather(*tasks)
         else:
+            caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
             uploaded = await client.send_video(
                 chat_id=self.log_group_id,
                 caption=f"📹  {caption}",

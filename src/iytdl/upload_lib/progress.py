@@ -44,7 +44,7 @@ async def progress(
         LOG.warning("Upload process is Cancelled")
         await client.stop_transmission()
     if total_file:
-        x, y = total_file.get('all_videos'), total_file.get('now_video')
+        x, y = total_file.get('now_video'), total_file.get('all_videos')
     else:
         x, y = 1, 1
     if x == y and current == total:
