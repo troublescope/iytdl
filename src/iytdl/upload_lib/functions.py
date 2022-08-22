@@ -5,6 +5,7 @@ import re
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Optional, Tuple, Union
+from math import ceil
 
 import mutagen
 
@@ -145,6 +146,7 @@ async def split_video(file_path, **kwargs: Any):
     start, cur_duration, limit, result = 1, 0, 2000000000, []
     file = Path(file_path)
     dur = await get_duration(file_path)
+    split_size = ceil(file.stat().st_size / ceil(file.stat().st_size / limit)) + 1000
     while cur_duration <= dur:
         new_file = file.parent.joinpath("{name}.part{no}{ext}".format(name=file.stem, no=str(start), ext=file.suffix))
         cmd = [
@@ -154,7 +156,7 @@ async def split_video(file_path, **kwargs: Any):
             "-ss",
             str(cur_duration),
             "-fs",
-            str(limit), 
+            str(split_size), 
             "-map_chapters", 
             "-1", 
             "-c", 
