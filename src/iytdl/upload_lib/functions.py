@@ -145,7 +145,6 @@ async def take_screen_shot(
 async def split_video(file_path, **kwargs: Any):
     start, cur_duration, limit, result = 1, 0, 2000000000, []
     file = Path(file_path)
-    dur = await get_duration(file_path)
     parts = ceil(file.stat().st_size / limit)
     split_size = ceil(file.stat().st_size / parts) + 1000
     while start != parts:
