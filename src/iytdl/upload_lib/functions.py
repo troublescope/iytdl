@@ -145,7 +145,7 @@ async def split_video(file_path, **kwargs: Any):
     start, cur_duration, limit, result = 1, 0, 2000000000, []
     file = Path(file_path)
     dur = await get_duration(file_path)
-    while dur != new_duration:
+    while new_duration >= dur:
         new_file = file.parent.joinpath("{name}.part{no}{ext}".format(name=file.stem, no=str(start), ext=file.suffix))
         cmd = [
             str(kwargs.get("ffmpeg", "ffmpeg")),
