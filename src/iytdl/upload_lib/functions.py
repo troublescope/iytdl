@@ -144,10 +144,10 @@ async def take_screen_shot(
 
 
 async def split_video(file_path, **kwargs: Any):
-    start, cur_duration, limit, result = 1, 0, 2000000000, []
+    start, cur_duration, result = 1, 0, []
     file = Path(file_path)
-    parts = ceil(file.stat().st_size / limit)
-    split_size = ceil(file.stat().st_size / parts) + 1000
+    split_size = 1.5 * 1024 * 1024 * 1024
+    parts = ceil(file.stat().st_size / split_size)
     while start <= parts:
         new_file = file.parent.joinpath("{name}.part{no}{ext}".format(name=file.stem, no=str(start).zfill(3), ext=file.suffix))
         logger.info(f"Part No. {start} starts at {cur_duration}")
