@@ -275,6 +275,7 @@ class Uploader:
         mkwargs: Dict[str, Any],
         with_progress: bool = True,
     ):
+        mkwargs.pop('is_split')
         caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
         uploaded = await client.send_audio(
             chat_id=self.log_group_id,
