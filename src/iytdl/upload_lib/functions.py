@@ -142,6 +142,13 @@ async def take_screen_shot(
     if rt_code == 0 and ss_path.is_file():
         return str(ss_path)
 
+def safe_filename(path, is_rename: bool = True):
+    if path is None:
+        return
+    safename = path.replace("'", "").replace('"', "")
+    if safename != path and is_rename:
+        Path(path).rename(safename)
+    return safename
 
 async def split_video(file_path, **kwargs: Any):
     start, cur_duration, result = 1, 0, []

@@ -9,7 +9,7 @@ from typing import Any, Dict, Literal, Optional, Union
 
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
-from iytdl.upload_lib.functions import split_video
+from iytdl.upload_lib.functions import split_video, safe_filename
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.types import (
@@ -205,7 +205,7 @@ class Uploader:
             async def send_video(c, p, g_id, file, file_name, caption, with_progress, total_file=None, **mkwargs):
                 m = await c.send_video(
                     chat_id=g_id,
-                    video = file,
+                    video = safe_filename(file),
                     caption=f"📹  {caption}",
                     parse_mode=ParseMode.HTML,
                     disable_notification=True,
@@ -231,6 +231,7 @@ class Uploader:
             uploaded = await asyncio.gather(*tasks)
         else:
             caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
+            mkwargs["video"] = safe_filename(mkwargs["video"])
             uploaded = await client.send_video(
                 chat_id=self.log_group_id,
                 caption=f"📹  {caption}",
@@ -277,6 +278,7 @@ class Uploader:
     ):
         mkwargs.pop('is_split')
         caption = f"<a href={caption_link}>{mkwargs['file_name']}</a>" if caption_link else f"<code>{mkwargs['file_name']}</code>"
+        mkwargs["audio"] = safe_filename(mkwargs["audio"])
         uploaded = await client.send_audio(
             chat_id=self.log_group_id,
             caption=f"🎵  {caption}",
