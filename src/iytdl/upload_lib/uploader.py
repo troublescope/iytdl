@@ -183,7 +183,6 @@ class Uploader:
         client: Client,
         process: Process,
         caption_link: str,
-
         mkwargs: Dict[str, Any],
         with_progress: bool = True,
     ):

@@ -16,6 +16,7 @@ from iytdl.utils import run_command
 
 logger = logging.getLogger(__name__)
 
+
 def unquote_filename(filename: Union[Path, str]) -> str:
     """
     Removes single and double quotes from filename to avoid ffmpeg errors
@@ -34,8 +35,8 @@ def unquote_filename(filename: Union[Path, str]) -> str:
     un_quoted = file.parent.joinpath(re.sub(r"[\"']", "", file.name))
     if file.name != un_quoted.name:
         file.rename(un_quoted)
-        return str(un_quoted)
-    return str(filename)
+        return safe_filename(str(un_quoted))
+    return safe_filename(str(filename))
 
 
 def thumb_from_audio(filename: Union[Path, str]) -> Optional[str]:
@@ -87,6 +88,7 @@ def covert_to_jpg(filename: Union[Path, str]) -> Tuple[str, Tuple[int]]:
         size = img.size
     return thumb_path, size
 
+
 async def get_duration(vid_path, **kwargs):
     try:
         cmd = [
@@ -105,6 +107,7 @@ async def get_duration(vid_path, **kwargs):
         return 0 if _rt_code != 0 else int(float(_dur))
     except Exception:
         return 0
+
 
 async def take_screen_shot(
     video_file: str, ttl: int = -1, **kwargs: Any
@@ -142,13 +145,15 @@ async def take_screen_shot(
     if rt_code == 0 and ss_path.is_file():
         return str(ss_path)
 
+
 def safe_filename(path, is_rename: bool = True):
     if path is None:
         return
     safename = path.replace("'", "").replace('"', "")
-    if safename != path and is_rename:
+    if safename != str(path) and is_rename:
         Path(path).rename(safename)
-    return safename
+    return str(safename)
+
 
 async def split_video(file_path, **kwargs: Any):
     start, cur_duration, result = 1, 0, []
@@ -156,21 +161,25 @@ async def split_video(file_path, **kwargs: Any):
     split_size = 1.5 * 1024 * 1024 * 1024
     parts = ceil(file.stat().st_size / split_size)
     while start <= parts:
-        new_file = file.parent.joinpath("{name}.part{no}{ext}".format(name=file.stem, no=str(start).zfill(3), ext=file.suffix))
+        new_file = file.parent.joinpath(
+            "{name}.part{no}{ext}".format(
+                name=file.stem, no=str(start).zfill(3), ext=file.suffix
+            )
+        )
         logger.info(f"Part No. {start} starts at {cur_duration}")
         cmd = [
-            str(kwargs.get("ffmpeg", "ffmpeg")), 
-            "-i", 
-            f"'{file_path}'", 
-            "-ss", 
-            str(cur_duration), 
-            "-fs", 
-            str(split_size), 
-            "-map_chapters", 
-            "-1", 
-            "-c", 
-            "copy", 
-            f'"{str(new_file)}"'
+            str(kwargs.get("ffmpeg", "ffmpeg")),
+            "-i",
+            f"'{file_path}'",
+            "-ss",
+            str(cur_duration),
+            "-fs",
+            str(split_size),
+            "-map_chapters",
+            "-1",
+            "-c",
+            "copy",
+            f'"{str(new_file)}"',
         ]
         rt_code = (await run_command(" ".join(cmd), shell=True, silent=True))[1]
         if rt_code == 0 and new_file.is_file():
