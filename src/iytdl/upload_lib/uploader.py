@@ -60,7 +60,6 @@ class Uploader:
         info_dict: Dict = {}
         for file in media_path.iterdir():
             if (not info_dict.get(media_type) and file.name.lower().endswith(getattr(ext, media_type)) and file.stat().st_size != 0):
-                info_dict["real_file"] = unquote_filename(file.absolute())
                 if file.stat().st_size > 2147000000 and media_type == 'video':  # 2 * 1024 * 1024 * 1024 = 2147483648
                     # raise ValueError(f"[{file}] will not be uploaded as filesize exceeds '2 GB', file size is {file.stat().st_size} !")
                     f_path = await split_video(file)
@@ -70,7 +69,7 @@ class Uploader:
                     f_path = unquote_filename(file.absolute())
                     info_dict["file_name"] = os.path.basename(f_path)
                     info_dict["is_split"] = False
-                
+                info_dict["real_file"] = unquote_filename(file.absolute())
                 info_dict[media_type] = f_path
             if not info_dict.get("thumb") and file.name.lower().endswith(ext.photo):
                 info_dict["thumb"], info_dict["size"] = covert_to_jpg(file)

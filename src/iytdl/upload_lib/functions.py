@@ -3,7 +3,6 @@ __all__ = ["unquote_filename", "thumb_from_audio", "covert_to_jpg", "take_screen
 import re
 import logging
 import mutagen
-import os
 
 from io import BytesIO
 from pathlib import Path
@@ -153,7 +152,7 @@ def safe_filename(file_path: str, is_rename: bool = True) -> str:
     safename = file_path.replace("'", "")
     safename = safename.replace('"', "")
     if safename != file_path and is_rename:
-        os.rename(file_path, safename)
+        Path(file_path).rename(safename)
     return safename
 
 
