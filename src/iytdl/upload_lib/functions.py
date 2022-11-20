@@ -3,6 +3,7 @@ __all__ = ["unquote_filename", "thumb_from_audio", "covert_to_jpg", "take_screen
 import re
 import logging
 import mutagen
+import os
 
 from io import BytesIO
 from pathlib import Path
@@ -146,13 +147,14 @@ async def take_screen_shot(
         return str(ss_path)
 
 
-def safe_filename(path, is_rename: bool = True):
-    if path is None:
+def safe_filename(file_path: str, is_rename: bool = True) -> str:
+    if file_path is None:
         return
-    safename = path.replace("'", "").replace('"', "")
-    if safename != str(path) and is_rename:
-        Path(path).rename(safename)
-    return str(safename)
+    safename = file_path.replace("'", "")
+    safename = safename.replace('"', "")
+    if safename != file_path and is_rename:
+        os.rename(file_path, safename)
+    return safename
 
 
 async def split_video(file_path, **kwargs: Any):
@@ -183,7 +185,7 @@ async def split_video(file_path, **kwargs: Any):
         ]
         rt_code = (await run_command(" ".join(cmd), shell=True, silent=True))[1]
         if rt_code == 0 and new_file.is_file():
-            result.append(unquote_filename(new_file))
+            result.append(unquote_filename(new_file.absolute()))
         new_duration = await get_duration(new_file)
         cur_duration += new_duration
         start += 1

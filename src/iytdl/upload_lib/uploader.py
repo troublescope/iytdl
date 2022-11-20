@@ -19,6 +19,7 @@ from pyrogram.types import (
     InputMediaVideo,
     Message,
 )
+from pathlib import Path
 
 from iytdl.processes import Process
 from iytdl.upload_lib import ext
@@ -53,20 +54,20 @@ class Uploader:
         """
         if media_type not in ("video", "audio"):
             raise TypeError("'media_type' only accepts video or audio")
-        media_path = self.download_path.joinpath(key)
+        media_path: Path = self.download_path.joinpath(key)
         if not media_path.is_dir():
             raise FileNotFoundError(f"'{media_path}' doesn't exist !")
         info_dict: Dict = {}
         for file in media_path.iterdir():
             if (not info_dict.get(media_type) and file.name.lower().endswith(getattr(ext, media_type)) and file.stat().st_size != 0):
-                info_dict["real_file"] = unquote_filename(file)
+                info_dict["real_file"] = unquote_filename(file.absolute())
                 if file.stat().st_size > 2147000000 and media_type == 'video':  # 2 * 1024 * 1024 * 1024 = 2147483648
                     # raise ValueError(f"[{file}] will not be uploaded as filesize exceeds '2 GB', file size is {file.stat().st_size} !")
                     f_path = await split_video(file)
                     info_dict["file_name"] = sorted([os.path.basename(f) for f in f_path])
                     info_dict["is_split"] = True
                 else:
-                    f_path = unquote_filename(file)
+                    f_path = unquote_filename(file.absolute())
                     info_dict["file_name"] = os.path.basename(f_path)
                     info_dict["is_split"] = False
                 
