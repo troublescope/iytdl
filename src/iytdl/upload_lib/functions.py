@@ -6,7 +6,7 @@ import mutagen
 
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union, List
 from math import ceil
 
 from PIL import Image
@@ -35,8 +35,8 @@ def unquote_filename(filename: Union[Path, str]) -> str:
     un_quoted = file.parent.joinpath(re.sub(r"[\"']", "", file.name))
     if file.name != un_quoted.name:
         file.rename(un_quoted)
-        return safe_filename(str(un_quoted))
-    return safe_filename(str(filename))
+        return un_quoted.absolute()
+    return file.absolute()
 
 
 def thumb_from_audio(filename: Union[Path, str]) -> Optional[str]:
@@ -146,17 +146,7 @@ async def take_screen_shot(
         return str(ss_path)
 
 
-def safe_filename(file_path: str, is_rename: bool = True) -> str:
-    if file_path is None:
-        return
-    safename = file_path.replace("'", "")
-    safename = safename.replace('"', "")
-    if safename != file_path and is_rename:
-        Path(file_path).rename(safename)
-    return safename
-
-
-async def split_video(file_path, **kwargs: Any):
+async def split_video(file_path, **kwargs: Any) -> List[Path]:
     start, cur_duration, result = 1, 0, []
     file = Path(file_path)
     split_size = 1.5 * 1024 * 1024 * 1024
