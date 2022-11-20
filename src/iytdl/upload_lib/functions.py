@@ -17,7 +17,7 @@ from iytdl.utils import run_command
 logger = logging.getLogger(__name__)
 
 
-def unquote_filename(filename: Union[Path, str]) -> str:
+def unquote_filename(filename: Union[Path, str]) -> Path:
     """
     Removes single and double quotes from filename to avoid ffmpeg errors
     due to unclosed quotation in filename

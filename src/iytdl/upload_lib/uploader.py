@@ -64,12 +64,12 @@ class Uploader:
                 and file.stat().st_size != 0
             ):
                 file = unquote_filename(file.absolute())
-                info_dict["real_file"] = file
+                info_dict["real_file"] = str(file.absolute())
                 if (
                     file.stat().st_size > 2147000000 and media_type == "video"
                 ):  # 2 * 1024 * 1024 * 1024 = 2147483648
                     # raise ValueError(f"[{file}] will not be uploaded as filesize exceeds '2 GB', file size is {file.stat().st_size} !")
-                    f_path = await split_video(file)
+                    f_path = await split_video(file.absolute())
                     info_dict["file_name"] = sorted(
                         [os.path.basename(f.absolute()) for f in f_path]
                     )
@@ -79,6 +79,7 @@ class Uploader:
                     info_dict["file_name"] = os.path.basename(f_path)
                     info_dict["is_split"] = False
                 info_dict[media_type] = f_path
+
             if not info_dict.get("thumb") and file.name.lower().endswith(ext.photo):
                 info_dict["thumb"], info_dict["size"] = covert_to_jpg(file)
 
@@ -86,7 +87,7 @@ class Uploader:
                 break
 
         if media := info_dict.pop("real_file"):
-            metadata = extractMetadata(createParser(str(media)))
+            metadata = extractMetadata(createParser(media))
             if metadata and metadata.has("duration"):
                 info_dict["duration"] = metadata.get("duration").seconds
 
