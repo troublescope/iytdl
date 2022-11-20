@@ -86,7 +86,7 @@ class Uploader:
                 break
 
         if media := info_dict.pop("real_file"):
-            metadata = extractMetadata(createParser(media))
+            metadata = extractMetadata(createParser(str(media)))
             if metadata and metadata.has("duration"):
                 info_dict["duration"] = metadata.get("duration").seconds
 
