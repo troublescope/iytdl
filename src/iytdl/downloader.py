@@ -44,7 +44,16 @@ class Downloader:
             "format": uid,
             "writethumbnail": True,
             "prefer_ffmpeg": True,
-            "postprocessors": [{"key": "FFmpegMetadata"}],
+            "allow_multiple_video_streams": True,
+            "allow_multiple_audio_streams": True,
+            "trim_file_name": 200,
+            "extractor-args": "youtube:skip=dash",
+            "postprocessors": [
+                {
+                    "key": "FFmpegMetadata",
+                    "add_metadata": True,
+                }
+            ],
             "quiet": self.silent,
             "logtostderr": self.silent,
         }
@@ -64,6 +73,10 @@ class Downloader:
             "format": "bestaudio/best",
             "geo_bypass": True,
             "nocheckcertificate": True,
+            "allow_multiple_video_streams": True,
+            "allow_multiple_audio_streams": True,
+            "extractor-args": "youtube:skip=dash",
+            "trim_file_name": 200,
             "postprocessors": [
                 {
                     "key": "FFmpegExtractAudio",
@@ -71,7 +84,10 @@ class Downloader:
                     "preferredquality": uid,
                 },
                 {"key": "EmbedThumbnail"},
-                {"key": "FFmpegMetadata"},
+                {
+                    "key": "FFmpegMetadata",
+                    "add_metadata": True,
+                },
             ],
             "quiet": self.silent,
             "logtostderr": self.silent,
@@ -155,11 +171,11 @@ class Downloader:
                 filename = prog_data.get("filename")
                 if prog_data.get("total_bytes"):
                     total = prog_data["total_bytes"]
-                elif prog_data.get('total_bytes_estimate'):
-                    total = prog_data['total_bytes_estimate']
+                elif prog_data.get("total_bytes_estimate"):
+                    total = prog_data["total_bytes_estimate"]
                 else:
                     total = None
-                
+
                 if total is not None:
                     percentage = round(current / total * 100)
                     progress_bar = (
