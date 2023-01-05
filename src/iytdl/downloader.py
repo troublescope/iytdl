@@ -56,10 +56,7 @@ class Downloader:
                     "key": "FFmpegMetadata",
                     "add_metadata": True,
                 },
-                {
-                    "key": "FFmpegEmbedSubtitle",
-                    "already_have_subtitle": False
-                },
+                {"key": "FFmpegEmbedSubtitle", "already_have_subtitle": False},
             ],
             "quiet": self.silent,
             "logtostderr": self.silent,
@@ -109,7 +106,10 @@ class Downloader:
             options |= ext_dl._export()
         try:
             with youtube_dl.YoutubeDL(options) as ytdl:
-                return ytdl.download([url])
+                info_dict = ytdl.extract_info(url, download=False)
+                files = ytdl.prepare_filename(info_dict)
+                ytdl.process_info(info_dict)
+                return files
         except DownloadError:
             logger.error("[DownloadError] : Failed to Download Video")
         except GeoRestrictedError:
