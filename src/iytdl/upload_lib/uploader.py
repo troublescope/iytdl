@@ -81,7 +81,7 @@ class Uploader:
                 info_dict[media_type] = f_path
 
             if not info_dict.get("thumb") and file.name.lower().endswith(ext.photo):
-                info_dict["thumb"], info_dict["size"] = covert_to_jpg(file)
+                info_dict["thumb"], info_dict["size"] = covert_to_jpg(file[0] if isinstance(file, list) else file)
 
             if media_type in info_dict and "thumb" in info_dict:
                 break
@@ -196,16 +196,6 @@ class Uploader:
         with_progress: bool = True,
     ):
 
-        if not mkwargs.get("thumb"):
-            ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
-
-            mkwargs["thumb"] = await take_screen_shot(
-                mkwargs["video"],
-                ttl,
-                ffmpeg=self._ffmpeg,
-                ffprobe=getattr(self, "_ffprobe", None),
-            )
-
         is_split = mkwargs.pop("is_split")
 
         if is_split:
@@ -247,6 +237,14 @@ class Uploader:
                     else f"<code>{file_name}</code>"
                 )
                 total_file = {"all_videos": len(videos), "now_video": nums}
+                if not mkwargs.get("thumb"):
+                    ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
+                    thumb = await take_screen_shot(
+                        file,
+                        ttl,
+                        ffmpeg=self._ffmpeg,
+                        ffprobe=getattr(self, "_ffprobe", None),
+                    )
                 tasks.append(
                     asyncio.create_task(
                         send_video(
@@ -258,6 +256,7 @@ class Uploader:
                             caption,
                             with_progress,
                             total_file=total_file,
+                            thumb=thumb,
                             **mkwargs,
                         )
                     )
@@ -265,6 +264,15 @@ class Uploader:
                 nums += 1
             uploaded = await asyncio.gather(*tasks)
         else:
+            if not mkwargs.get("thumb"):
+                ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
+
+                mkwargs["thumb"] = await take_screen_shot(
+                    mkwargs["video"],
+                    ttl,
+                    ffmpeg=self._ffmpeg,
+                    ffprobe=getattr(self, "_ffprobe", None),
+                )
             caption = (
                 f"<a href={caption_link}>{mkwargs['file_name']}</a>"
                 if caption_link
