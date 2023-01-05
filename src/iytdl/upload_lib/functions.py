@@ -175,7 +175,7 @@ async def split_video(file_path, **kwargs: Any) -> List[Path]:
         rt_code = (await run_command(" ".join(cmd), shell=True, silent=True))[1]
         if rt_code == 0 and new_file.is_file():
             result.append(unquote_filename(new_file.absolute()))
-        new_duration = await get_duration(new_file)
+        new_duration = await get_duration(new_file, **kwargs)
         cur_duration += new_duration
         start += 1
         logger.info(f"Duration of {new_file} : {new_duration}")
