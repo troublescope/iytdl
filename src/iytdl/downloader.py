@@ -109,9 +109,11 @@ class Downloader:
                 info_dict = ytdl.extract_info(url, download=False)
                 files = ytdl.prepare_filename(info_dict)
                 ytdl.process_info(info_dict)
+                self._download_retcode = ytdl._download_retcode
                 return files
-        except DownloadError:
+        except DownloadError as e:
             logger.error("[DownloadError] : Failed to Download Video")
+            raise DownloadFailedError(str(e)) from e
         except GeoRestrictedError:
             logger.error(
                 "[GeoRestrictedError] : The uploader has not made this video"
@@ -128,6 +130,7 @@ class Downloader:
         update: Union[Message, CallbackQuery],
         with_progress: bool = True,
         edit_rate: int = 8,
+        return_files: bool = False,
         cb_extra: Union[int, str, None] = None,
     ) -> str:
         """Download Media with progress bar
@@ -218,9 +221,7 @@ class Downloader:
         else:
             raise TypeError(f"'{downtype}' is Unsupported !")
 
-        if isinstance(out, int) and out == 0:
-            return key
-        raise DownloadFailedError(str(out))
+        return key, out if return_files else key
 
     @staticmethod
     async def progress_func(process: Process, text: str) -> None:
