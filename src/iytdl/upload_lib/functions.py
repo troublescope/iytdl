@@ -91,8 +91,10 @@ def covert_to_jpg(filename: Union[Path, str]) -> Tuple[str, Tuple[int]]:
 
 async def get_duration(vid_path, **kwargs):
     try:
+        ffprobe = str(kwargs.get("ffprobe", "ffprobe"))
+        logger.info(f"Using FFPROBE with name : {ffprobe}")
         cmd = [
-            str(kwargs.get("ffprobe", "ffprobe")),
+            ffprobe,
             "-i",
             f'"{str(vid_path)}"',
             "-v",
@@ -151,6 +153,8 @@ async def split_video(file_path, **kwargs: Any) -> List[Path]:
     file = Path(file_path)
     split_size = 1.5 * 1024 * 1024 * 1024
     parts = ceil(file.stat().st_size / split_size)
+    ffmpeg = str(kwargs.get("ffmpeg", "ffmpeg"))
+    logger.info(f"Using FFMPEG with name : {ffmpeg}")
     while start <= parts:
         new_file = file.parent.joinpath(
             "{name}.part{no}{ext}".format(
@@ -159,7 +163,7 @@ async def split_video(file_path, **kwargs: Any) -> List[Path]:
         )
         logger.info(f"Part No. {start} starts at {cur_duration}")
         cmd = [
-            str(kwargs.get("ffmpeg", "ffmpeg")),
+            ffmpeg,
             "-i",
             f"'{file_path}'",
             "-ss",
