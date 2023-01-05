@@ -44,6 +44,9 @@ class Downloader:
             "format": uid,
             "writethumbnail": True,
             "prefer_ffmpeg": True,
+            "embedsubtitles": True,
+            "writesubtitles": True,
+            "allsubtitles": True,
             "allow_multiple_video_streams": True,
             "allow_multiple_audio_streams": True,
             "trim_file_name": 200,
@@ -52,7 +55,11 @@ class Downloader:
                 {
                     "key": "FFmpegMetadata",
                     "add_metadata": True,
-                }
+                },
+                {
+                    "key": "FFmpegEmbedSubtitle",
+                    "already_have_subtitle": False
+                },
             ],
             "quiet": self.silent,
             "logtostderr": self.silent,
@@ -75,8 +82,8 @@ class Downloader:
             "nocheckcertificate": True,
             "allow_multiple_video_streams": True,
             "allow_multiple_audio_streams": True,
-            "extractor-args": "youtube:skip=dash",
             "trim_file_name": 200,
+            "extractor-args": "youtube:skip=dash",
             "postprocessors": [
                 {
                     "key": "FFmpegExtractAudio",

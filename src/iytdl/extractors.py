@@ -140,7 +140,7 @@ class Extractor:
 
         def qual_filter(frmt) -> bool:
             if frmt.get("tbr") and frmt.get("acodec") and (width := frmt.get("width")):
-                if not (width in widthset):
+                if width not in widthset:
                     widthset.add(width)
                     return True
             return False
@@ -204,9 +204,9 @@ class Extractor:
                 fr_size = video.get("filesize")
                 if video.get("ext") == "mp4":
                     for frmt_ in qual_list:
-                        if fr_note in (frmt_, frmt_ + "60"):
+                        if fr_note in (frmt_, f"{frmt_}60"):
                             qual_dict[frmt_][fr_id] = fr_size
-                if video.get("acodec") != "none":
+                if str(video.get("acodec")).lower() != "none":
                     bitrrate = int(video.get("abr", 0))
                     if bitrrate != 0:
                         audio_dict[
