@@ -69,7 +69,6 @@ class Uploader:
                 and file.stat().st_size != 0
             ):
                 file = unquote_filename(file.absolute())
-                info_dict["real_file"] = str(file.absolute())
                 if (
                     file.stat().st_size > 2147000000 and media_type == "video"
                 ):  # 2 * 1024 * 1024 * 1024 = 2147483648
