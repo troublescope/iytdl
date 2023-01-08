@@ -69,7 +69,9 @@ class Uploader:
                     file.stat().st_size > 2147000000 and media_type == "video"
                 ):  # 2 * 1024 * 1024 * 1024 = 2147483648
                     # raise ValueError(f"[{file}] will not be uploaded as filesize exceeds '2 GB', file size is {file.stat().st_size} !")
-                    f_path = await split_video(file.absolute(), ffmpeg=self._ffmpeg, ffprobe=self._ffprobe)
+                    f_path = await split_video(
+                        file.absolute(), ffmpeg=self._ffmpeg, ffprobe=self._ffprobe
+                    )
                     info_dict["file_name"] = sorted(
                         [os.path.basename(f.absolute()) for f in f_path]
                     )
@@ -81,7 +83,9 @@ class Uploader:
                 info_dict[media_type] = f_path
 
             if not info_dict.get("thumb") and file.name.lower().endswith(ext.photo):
-                info_dict["thumb"], info_dict["size"] = covert_to_jpg(file[0] if isinstance(file, list) else file)
+                info_dict["thumb"], info_dict["size"] = covert_to_jpg(
+                    file[0] if isinstance(file, list) else file
+                )
 
             if media_type in info_dict and "thumb" in info_dict:
                 break
@@ -239,7 +243,9 @@ class Uploader:
                 total_file = {"all_videos": len(videos), "now_video": nums}
                 thumb = mkwargs.pop("thumb", None)
                 if not thumb:
-                    ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
+                    ttl = (
+                        (duration // 2) if (duration := mkwargs.get("duration")) else -1
+                    )
                     thumb = await take_screen_shot(
                         file,
                         ttl,
@@ -293,32 +299,39 @@ class Uploader:
         if not uploaded:
             return
         await asyncio.sleep(2)
+
+        def __get_inputs(uploaded):
+            if uploaded.video:
+                return InputMediaVideo(
+                    uploaded.video.file_id, caption=uploaded.caption.html
+                )
+            elif uploaded.document:
+                return InputMediaDocument(
+                    uploaded.document.file_id, caption=uploaded.caption.html
+                )
+
         if not process.is_cancelled:
             if not is_split:
-                if uploaded.video:
-                    return await process.edit_media(
-                        media=InputMediaVideo(
-                            uploaded.video.file_id, caption=uploaded.caption.html
-                        ),
-                        reply_markup=None,
-                    )
-                elif uploaded.document:
-                    return await process.edit_media(
-                        media=InputMediaDocument(
-                            uploaded.document.file_id, caption=uploaded.caption.html
-                        ),
-                        reply_markup=None,
-                    )
-            else:
-                new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
-                for i, upload_msg in enumerate(uploaded, start=1):
-                    new_msg, _ = await asyncio.gather(
-                        upload_msg.copy(self.msg.chat.id, reply_markup=None),
-                        asyncio.sleep(2),
-                    )
-                    name = upload_msg.document or upload_msg.video
-                    new_caption += f"{i}. <a href={new_msg.link}>{name.file_name}</a>\n"
-                return await process.edit(new_caption)
+                return await process.edit_media(
+                    __get_inputs(uploaded), reply_markup=None
+                )
+            new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
+            uploads, child_up = [], []
+            for ups in uploaded:
+                child_up.append(__get_inputs(ups))
+                if len(child_up) == 10:
+                    uploads.append(child_up)
+                    child_up = []
+
+            for upload in uploads:
+                new_msg, _ = await asyncio.gather(
+                    process.reply_media_group(upload, quote=True),
+                    asyncio.sleep(2),
+                )
+                for i, msg in enumerate(new_msg, start=1):
+                    msg = msg.video or msg.document
+                    new_caption += f"{i}. <a href={msg.link}>{msg.file_name}</a>\n"
+            return await process.edit(new_caption)
 
     async def __upload_audio(
         self,
