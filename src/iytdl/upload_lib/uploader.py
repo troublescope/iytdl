@@ -108,7 +108,8 @@ class Uploader:
         if not info_dict:
             have_dict = False
             info_dict = {}
-        metadata = extractMetadata(createParser(Path(media)))
+        _parser = createParser(Path(media).absolute())
+        metadata = extractMetadata(_parser)
         if metadata and metadata.has("duration"):
             info_dict["duration"] = metadata.get("duration").seconds
 
