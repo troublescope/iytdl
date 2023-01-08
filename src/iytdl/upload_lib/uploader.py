@@ -263,8 +263,7 @@ class Uploader:
                 )
                 nums += 1
         else:
-            meta = get_metadata(mkwargs["video"], media_type, mkwargs)
-            mkwargs.update(meta)
+            get_metadata(mkwargs["video"], media_type, mkwargs)
             if not mkwargs.get("thumb"):
                 ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
 
@@ -345,7 +344,7 @@ class Uploader:
             if caption_link
             else f"<code>{mkwargs['file_name']}</code>"
         )
-        mkwargs |= get_metadata(mkwargs[media_type], media_type, mkwargs)
+        get_metadata(mkwargs[media_type], media_type, mkwargs)
         uploaded = await client.send_audio(
             chat_id=self.log_group_id,
             caption=f"🎵  {caption}",
