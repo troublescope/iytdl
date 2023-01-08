@@ -313,6 +313,7 @@ class Uploader:
                     __get_inputs(uploaded), reply_markup=None
                 )
             new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
+            m = await process.edit(new_caption)
             uploads, child_up = [], []
             for ups in uploaded:
                 child_up.append(__get_inputs(ups))
@@ -324,7 +325,7 @@ class Uploader:
 
             for upload in uploads:
                 new_msg, _ = await asyncio.gather(
-                    process.reply_media_group(upload, quote=True),
+                    m.reply_media_group(upload, quote=True),
                     asyncio.sleep(2),
                 )
                 for i, msg in enumerate(new_msg, start=1):
