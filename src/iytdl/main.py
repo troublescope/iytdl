@@ -83,7 +83,7 @@ class iYTDL(Extractor, Downloader, Uploader):
             ffprobe_location = Path(ffprobe_location)
             if not ffprobe_location.is_file():
                 raise FileNotFoundError(ffprobe_location)
-        
+
         self._ffmpeg = ffmpeg_location
         self._ffprobe = ffprobe_location
         super().__init__(silent=silent)
@@ -187,7 +187,9 @@ class iYTDL(Extractor, Downloader, Uploader):
         if url := await self.cache.get_url(key):
             return await self.generic_extractor(key, url)
 
-    async def parse(self, search_query: str, extract: bool = True) -> types.SearchResult:
+    async def parse(
+        self, search_query: str, extract: bool = True
+    ) -> types.SearchResult:
         """Automatically parses `search_query`.
 
         Parameters:
@@ -344,11 +346,13 @@ class iYTDL(Extractor, Downloader, Uploader):
     async def _check_ffmpeg(self) -> None:
         ffmpeg = self._ffmpeg
         if isinstance(self._ffmpeg, Path):
-            _ffprobe = self._ffmpeg.parent.joinpath(f"{self._ffprobe}{'.exe' if isinstance(self._ffmpeg, WindowsPath) else ''}")
+            _ffprobe = self._ffmpeg.parent.joinpath(
+                f"{self._ffprobe}{'.exe' if isinstance(self._ffmpeg, WindowsPath) else ''}"
+            )
             ffprobe = _ffprobe if _ffprobe.is_file() else None
         else:
             ffprobe = self._ffprobe
-    
+
         out_1 = await run_command(f"{ffmpeg} -version", shell=True)
         if out_1[1] != 0:
             raise ValueError(f"'{ffmpeg}' was not Found !")
