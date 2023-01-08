@@ -94,6 +94,7 @@ class Uploader:
         return info_dict
 
     def __get_metadata(self, media: str, media_type: str, info_dict: Dict = None) -> Dict:
+        logger.info(f"Metadata: {media}")
         have_dict = True
         if not info_dict:
             have_dict = False
