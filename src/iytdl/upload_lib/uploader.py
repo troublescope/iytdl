@@ -231,7 +231,7 @@ class Uploader:
                 await asyncio.sleep(2)
                 return m
 
-            tasks = []
+            uploaded = []
             videos, videos_name = mkwargs.pop("video"), mkwargs.pop("file_name")
             nums = 1
             for file, file_name in zip(videos, videos_name):
@@ -252,24 +252,21 @@ class Uploader:
                         ffmpeg=self._ffmpeg,
                         ffprobe=getattr(self, "_ffprobe", None),
                     )
-                tasks.append(
-                    asyncio.create_task(
-                        send_video(
-                            client,
-                            process,
-                            self.log_group_id,
-                            file,
-                            file_name,
-                            caption,
-                            with_progress,
-                            total_file=total_file,
-                            thumb=thumb,
-                            **mkwargs,
-                        )
+                uploaded.append(
+                    await send_video(
+                        client,
+                        process,
+                        self.log_group_id,
+                        file,
+                        file_name,
+                        caption,
+                        with_progress,
+                        total_file=total_file,
+                        thumb=thumb,
+                        **mkwargs,
                     )
                 )
                 nums += 1
-            uploaded = await asyncio.gather(*tasks)
         else:
             if not mkwargs.get("thumb"):
                 ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
