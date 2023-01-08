@@ -93,7 +93,7 @@ class Uploader:
         
         return info_dict
 
-    def __get_metadata(self, media: str, media_type: str) -> dict:
+    def __get_metadata(self, media: str, media_type: str) -> Dict:
         info_dict = {}
         metadata = extractMetadata(createParser(media))
         if metadata and metadata.has("duration"):
