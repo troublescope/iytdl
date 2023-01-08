@@ -53,6 +53,7 @@ class Uploader:
         """
         if media_type not in ("video", "audio"):
             raise TypeError("'media_type' only accepts video or audio")
+
         media_path: Path = self.download_path.joinpath(key)
         if not media_path.is_dir():
             raise FileNotFoundError(f"'{media_path}' doesn't exist !")
@@ -90,25 +91,26 @@ class Uploader:
             if media_type in info_dict and "thumb" in info_dict:
                 break
 
-        if media := info_dict.pop("real_file"):
-            metadata = extractMetadata(createParser(media))
-            if metadata and metadata.has("duration"):
-                info_dict["duration"] = metadata.get("duration").seconds
+    def __get_metadata(self, media: str, media_type: str) -> dict:
+        info_dict = {}
+        metadata = extractMetadata(createParser(media))
+        if metadata and metadata.has("duration"):
+            info_dict["duration"] = metadata.get("duration").seconds
 
-            if media_type == "audio":
-                info_dict.pop("size", None)
-                if metadata.has("artist"):
-                    info_dict["performer"] = metadata.get("artist")
-                if metadata.has("title"):
-                    info_dict["title"] = metadata.get("title")
-                # If Thumb doesn't exist then check for Album art
-                if not info_dict.get("thumb"):
-                    info_dict["thumb"] = thumb_from_audio(media)
-            else:
-                width, height = info_dict.pop("size", (1280, 720))
-                info_dict["height"] = height
-                info_dict["width"] = width
-            return info_dict
+        if media_type == "audio":
+            info_dict.pop("size", None)
+            if metadata.has("artist"):
+                info_dict["performer"] = metadata.get("artist")
+            if metadata.has("title"):
+                info_dict["title"] = metadata.get("title")
+            # If Thumb doesn't exist then check for Album art
+            if not info_dict.get("thumb"):
+                info_dict["thumb"] = thumb_from_audio(media)
+        else:
+            width, height = info_dict.pop("size", (1280, 720))
+            info_dict["height"] = height
+            info_dict["width"] = width
+        return info_dict
 
     async def get_input_media(
         self,
@@ -181,11 +183,16 @@ class Uploader:
         try:
             if downtype == "video":
                 return await self.__upload_video(
-                    client, process, caption_link, mkwargs, with_progress
+                    client, process, caption_link, mkwargs, downtype, with_progress
                 )
             if downtype == "audio":
                 return await self.__upload_audio(
-                    client, process, caption_link, mkwargs, with_progress
+                    client,
+                    process,
+                    caption_link,
+                    mkwargs,
+                    downtype,
+                    with_progress,
                 )
         finally:
             if self.delete_file_after_upload:
@@ -197,6 +204,7 @@ class Uploader:
         process: Process,
         caption_link: str,
         mkwargs: Dict[str, Any],
+        media_type: str,
         with_progress: bool = True,
     ):
 
@@ -252,6 +260,7 @@ class Uploader:
                         ffmpeg=self._ffmpeg,
                         ffprobe=getattr(self, "_ffprobe", None),
                     )
+                mkwargs.update(self.__get_metadata(file, media_type))
                 uploaded.append(
                     await send_video(
                         client,
@@ -268,6 +277,7 @@ class Uploader:
                 )
                 nums += 1
         else:
+            mkwargs.update(self.__get_metadata(mkwargs[media_type], media_type))
             if not mkwargs.get("thumb"):
                 ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
 
@@ -339,6 +349,7 @@ class Uploader:
         process: Process,
         caption_link: str,
         mkwargs: Dict[str, Any],
+        media_type: str,
         with_progress: bool = True,
     ):
         mkwargs.pop("is_split")
@@ -347,6 +358,7 @@ class Uploader:
             if caption_link
             else f"<code>{mkwargs['file_name']}</code>"
         )
+        mkwargs.update(self.__get_metadata(mkwargs[media_type], media_type))
         uploaded = await client.send_audio(
             chat_id=self.log_group_id,
             caption=f"🎵  {caption}",
