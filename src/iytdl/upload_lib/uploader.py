@@ -93,8 +93,11 @@ class Uploader:
         
         return info_dict
 
-    def __get_metadata(self, media: str, media_type: str) -> Dict:
-        info_dict = {}
+    def __get_metadata(self, media: str, media_type: str, info_dict: Dict = None) -> Dict:
+        have_dict = True
+        if not info_dict:
+            have_dict = False
+            info_dict = {}
         metadata = extractMetadata(createParser(media))
         if metadata and metadata.has("duration"):
             info_dict["duration"] = metadata.get("duration").seconds
@@ -112,7 +115,8 @@ class Uploader:
             width, height = info_dict.pop("size", (1280, 720))
             info_dict["height"] = height
             info_dict["width"] = width
-        return info_dict
+        if not have_dict:
+            return info_dict
 
     async def get_input_media(
         self,
@@ -279,7 +283,7 @@ class Uploader:
                 )
                 nums += 1
         else:
-            mkwargs.update(self.__get_metadata(mkwargs[media_type], media_type))
+            mkwargs.update(self.__get_metadata(mkwargs["video"], media_type, mkwargs))
             if not mkwargs.get("thumb"):
                 ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
 
@@ -360,7 +364,7 @@ class Uploader:
             if caption_link
             else f"<code>{mkwargs['file_name']}</code>"
         )
-        mkwargs.update(self.__get_metadata(mkwargs[media_type], media_type))
+        mkwargs |= self.__get_metadata(mkwargs[media_type], media_type, mkwargs)
         uploaded = await client.send_audio(
             chat_id=self.log_group_id,
             caption=f"🎵  {caption}",
