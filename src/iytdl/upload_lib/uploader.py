@@ -341,8 +341,8 @@ class Uploader:
                     asyncio.sleep(2),
                 )
                 for i, msg in enumerate(new_msg, start=1):
-                    msg = msg.video or msg.document
-                    new_caption += f"{i}. <a href={msg.link}>{msg.file_name}</a>\n"
+                    _ = msg.video or msg.document
+                    new_caption += f"{i}. <a href={msg.link}>{_.file_name}</a>\n"
             return await process.edit(new_caption)
 
     async def __upload_audio(
