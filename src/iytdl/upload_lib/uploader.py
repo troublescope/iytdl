@@ -319,6 +319,8 @@ class Uploader:
                 if len(child_up) == 10:
                     uploads.append(child_up)
                     child_up = []
+            if len(child_up) != 0:
+                uploads.append(child_up)
 
             for upload in uploads:
                 new_msg, _ = await asyncio.gather(
