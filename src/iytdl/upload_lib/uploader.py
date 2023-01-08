@@ -237,7 +237,8 @@ class Uploader:
                     else f"<code>{file_name}</code>"
                 )
                 total_file = {"all_videos": len(videos), "now_video": nums}
-                if not mkwargs.get("thumb"):
+                thumb = mkwargs.pop("thumb")
+                if not thumb:
                     ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
                     thumb = await take_screen_shot(
                         file,
