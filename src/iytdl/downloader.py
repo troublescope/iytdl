@@ -97,6 +97,8 @@ class Downloader:
             ],
             "quiet": self.silent,
             "logtostderr": self.silent,
+            "ffmpeg_location": self._ffmpeg,
+            "ffprobe_location": self._ffmpeg,
         }
         return await self.ytdownloader(url, options)
 
