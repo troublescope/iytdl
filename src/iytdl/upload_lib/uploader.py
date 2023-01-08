@@ -90,6 +90,8 @@ class Uploader:
 
             if media_type in info_dict and "thumb" in info_dict:
                 break
+        
+        return info_dict
 
     def __get_metadata(self, media: str, media_type: str) -> dict:
         info_dict = {}
