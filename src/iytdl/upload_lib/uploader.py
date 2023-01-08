@@ -69,7 +69,7 @@ class Uploader:
                     file.stat().st_size > 2147000000 and media_type == "video"
                 ):  # 2 * 1024 * 1024 * 1024 = 2147483648
                     # raise ValueError(f"[{file}] will not be uploaded as filesize exceeds '2 GB', file size is {file.stat().st_size} !")
-                    f_path = await split_video(file.absolute())
+                    f_path = await split_video(file.absolute(), ffmpeg=self._ffmpeg, ffprobe=self._ffprobe)
                     info_dict["file_name"] = sorted(
                         [os.path.basename(f.absolute()) for f in f_path]
                     )
