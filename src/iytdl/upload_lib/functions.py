@@ -191,27 +191,26 @@ async def split_video(file_path, **kwargs: Any) -> List[Path]:
 
 def get_metadata(media: str, media_type: str, info_dict: dict = None) -> dict:
     logger.info(f"Metadata: {media}")
-    have_dict = True
-    if not info_dict:
-        have_dict = False
-        info_dict = {}
+    new_dict = {}
     _parser = createParser(str(Path(media).absolute()))
     metadata = extractMetadata(_parser)
     if metadata and metadata.has("duration"):
-        info_dict["duration"] = metadata.get("duration").seconds
+        new_dict["duration"] = metadata.get("duration").seconds
 
     if media_type == "audio":
-        info_dict.pop("size", None)
+        new_dict.pop("size", None)
         if metadata.has("artist"):
-            info_dict["performer"] = metadata.get("artist")
+            new_dict["performer"] = metadata.get("artist")
         if metadata.has("title"):
-            info_dict["title"] = metadata.get("title")
+            new_dict["title"] = metadata.get("title")
         # If Thumb doesn't exist then check for Album art
-        if not info_dict.get("thumb"):
-            info_dict["thumb"] = thumb_from_audio(media)
+        if not new_dict.get("thumb"):
+            new_dict["thumb"] = thumb_from_audio(media)
     else:
-        width, height = info_dict.pop("size", (1280, 720))
-        info_dict["height"] = height
-        info_dict["width"] = width
-    if not have_dict:
-        return info_dict
+        width, height = new_dict.pop("size", (1280, 720))
+        new_dict["height"] = height
+        new_dict["width"] = width
+    if info_dict:
+        info_dict |= new_dict
+    else:
+        return new_dict
