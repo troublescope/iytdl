@@ -10,6 +10,8 @@ from typing import Any, Optional, Tuple, Union, List
 from math import ceil
 
 from PIL import Image
+from hachoir.metadata import extractMetadata
+from hachoir.parser import createParser
 
 from iytdl.upload_lib import ext
 from iytdl.utils import run_command
@@ -185,3 +187,31 @@ async def split_video(file_path, **kwargs: Any) -> List[Path]:
         logger.info(f"Duration of {new_file} : {new_duration}")
     logger.info(f"File Splitted To : {len(result)}")
     return sorted(result)
+
+
+def get_metadata(media: str, media_type: str, info_dict: dict = None) -> dict:
+    logger.info(f"Metadata: {media}")
+    have_dict = True
+    if not info_dict:
+        have_dict = False
+        info_dict = {}
+    _parser = createParser(Path(media).absolute())
+    metadata = extractMetadata(_parser)
+    if metadata and metadata.has("duration"):
+        info_dict["duration"] = metadata.get("duration").seconds
+
+    if media_type == "audio":
+        info_dict.pop("size", None)
+        if metadata.has("artist"):
+            info_dict["performer"] = metadata.get("artist")
+        if metadata.has("title"):
+            info_dict["title"] = metadata.get("title")
+        # If Thumb doesn't exist then check for Album art
+        if not info_dict.get("thumb"):
+            info_dict["thumb"] = thumb_from_audio(media)
+    else:
+        width, height = info_dict.pop("size", (1280, 720))
+        info_dict["height"] = height
+        info_dict["width"] = width
+    if not have_dict:
+        return info_dict

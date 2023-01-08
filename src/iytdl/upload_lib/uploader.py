@@ -7,9 +7,6 @@ import os
 from shutil import rmtree
 from typing import Any, Dict, Literal, Optional, Union
 
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
-
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.types import (
@@ -26,7 +23,7 @@ from iytdl.upload_lib import ext
 from iytdl.upload_lib.functions import (
     split_video,
     take_screen_shot,
-    thumb_from_audio,
+    get_metadata,
     unquote_filename,
     covert_to_jpg,
 )  # noqa ignore=F405
@@ -100,34 +97,6 @@ class Uploader:
 
         return info_dict
 
-    def __get_metadata(
-        self, media: str, media_type: str, info_dict: Dict = None
-    ) -> Dict:
-        logger.info(f"Metadata: {media}")
-        have_dict = True
-        if not info_dict:
-            have_dict = False
-            info_dict = {}
-        _parser = createParser(Path(media).absolute())
-        metadata = extractMetadata(_parser)
-        if metadata and metadata.has("duration"):
-            info_dict["duration"] = metadata.get("duration").seconds
-
-        if media_type == "audio":
-            info_dict.pop("size", None)
-            if metadata.has("artist"):
-                info_dict["performer"] = metadata.get("artist")
-            if metadata.has("title"):
-                info_dict["title"] = metadata.get("title")
-            # If Thumb doesn't exist then check for Album art
-            if not info_dict.get("thumb"):
-                info_dict["thumb"] = thumb_from_audio(media)
-        else:
-            width, height = info_dict.pop("size", (1280, 720))
-            info_dict["height"] = height
-            info_dict["width"] = width
-        if not have_dict:
-            return info_dict
 
     async def get_input_media(
         self,
@@ -277,7 +246,8 @@ class Uploader:
                         ffmpeg=self._ffmpeg,
                         ffprobe=getattr(self, "_ffprobe", None),
                     )
-                mkwargs.update(self.__get_metadata(file, media_type))
+                meta = get_metadata(file, media_type)
+                mkwargs.update(meta)
                 uploaded.append(
                     await send_video(
                         client,
@@ -294,7 +264,8 @@ class Uploader:
                 )
                 nums += 1
         else:
-            mkwargs.update(self.__get_metadata(mkwargs["video"], media_type, mkwargs))
+            meta = get_metadata(mkwargs["video"], media_type, mkwargs)
+            mkwargs.update(meta)
             if not mkwargs.get("thumb"):
                 ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
 
@@ -375,7 +346,7 @@ class Uploader:
             if caption_link
             else f"<code>{mkwargs['file_name']}</code>"
         )
-        mkwargs |= self.__get_metadata(mkwargs[media_type], media_type, mkwargs)
+        mkwargs |= get_metadata(mkwargs[media_type], media_type, mkwargs)
         uploaded = await client.send_audio(
             chat_id=self.log_group_id,
             caption=f"🎵  {caption}",
