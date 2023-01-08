@@ -9,7 +9,7 @@ from typing import Any, Dict, Literal, Optional, Union
 
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
-from iytdl.upload_lib.functions import split_video
+
 from pyrogram import Client
 from pyrogram.enums import ParseMode
 from pyrogram.types import (
@@ -23,8 +23,15 @@ from pathlib import Path
 
 from iytdl.processes import Process
 from iytdl.upload_lib import ext
-from iytdl.upload_lib.functions import *  # noqa ignore=F405
+from iytdl.upload_lib.functions import (
+    split_video,
+    take_screen_shot,
+    thumb_from_audio,
+    unquote_filename,
+    covert_to_jpg,
+)  # noqa ignore=F405
 from iytdl.upload_lib.progress import progress as upload_progress
+
 from iytdl.utils import *  # noqa ignore=F405
 
 
@@ -90,10 +97,12 @@ class Uploader:
 
             if media_type in info_dict and "thumb" in info_dict:
                 break
-        
+
         return info_dict
 
-    def __get_metadata(self, media: str, media_type: str, info_dict: Dict = None) -> Dict:
+    def __get_metadata(
+        self, media: str, media_type: str, info_dict: Dict = None
+    ) -> Dict:
         logger.info(f"Metadata: {media}")
         have_dict = True
         if not info_dict:
