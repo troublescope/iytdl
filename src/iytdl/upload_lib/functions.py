@@ -199,7 +199,7 @@ def get_metadata(media: str, media_type: str, info_dict: dict = None) -> dict:
 
     if media_type == "audio":
         if info_dict:
-            new_dict.pop("size", None)
+            info_dict.pop("size", None)
         if metadata.has("artist"):
             new_dict["performer"] = metadata.get("artist")
         if metadata.has("title"):
