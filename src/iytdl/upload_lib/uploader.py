@@ -300,7 +300,7 @@ class Uploader:
                 )
             elif uploaded.animation:
                 return InputMediaAnimation(
-                    upload.animation.file_id, caption=uploaded.caption.html
+                    uploaded.animation.file_id, caption=uploaded.caption.html
                 )
             elif uploaded.document:
                 return InputMediaDocument(
