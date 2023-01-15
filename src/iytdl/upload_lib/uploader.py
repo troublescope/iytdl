@@ -298,7 +298,7 @@ class Uploader:
                 return InputMediaVideo(
                     uploaded.video.file_id, caption=uploaded.caption.html
                 )
-            elif upload.animation:
+            elif uploaded.animation:
                 return InputMediaAnimation(
                     upload.animation.file_id, caption=uploaded.caption.html
                 )
