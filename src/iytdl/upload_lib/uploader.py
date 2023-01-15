@@ -14,6 +14,7 @@ from pyrogram.types import (
     InputMediaAudio,
     InputMediaDocument,
     InputMediaVideo,
+    InputMediaAnimation,
     Message,
 )
 from pathlib import Path
@@ -95,7 +96,6 @@ class Uploader:
                 break
 
         return info_dict
-
 
     async def get_input_media(
         self,
@@ -297,6 +297,10 @@ class Uploader:
             if uploaded.video:
                 return InputMediaVideo(
                     uploaded.video.file_id, caption=uploaded.caption.html
+                )
+            elif upload.animation:
+                return InputMediaAnimation(
+                    upload.animation.file_id, caption=uploaded.caption.html
                 )
             elif uploaded.document:
                 return InputMediaDocument(
