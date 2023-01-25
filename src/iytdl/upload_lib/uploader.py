@@ -227,6 +227,7 @@ class Uploader:
             uploaded = []
             videos, videos_name = mkwargs.pop("video"), mkwargs.pop("file_name")
             nums = 1
+            size = mkwargs.pop("size", (1280, 720))
             for file, file_name in zip(videos, videos_name):
                 caption = (
                     f"<a href={caption_link}>{file_name}</a>"
@@ -245,7 +246,7 @@ class Uploader:
                         ffmpeg=self._ffmpeg,
                         ffprobe=getattr(self, "_ffprobe", None),
                     )
-                meta = get_metadata(file, media_type)
+                meta = get_metadata(file, media_type, size=size)
                 mkwargs.update(meta)
                 uploaded.append(
                     await send_video(
@@ -263,7 +264,9 @@ class Uploader:
                 )
                 nums += 1
         else:
-            get_metadata(mkwargs["video"], media_type, mkwargs)
+            size = mkwargs.pop("size", (1280, 720))
+            meta = get_metadata(mkwargs["video"], media_type, size=size)
+            mkwargs.update(meta)
             if not mkwargs.get("thumb"):
                 ttl = (duration // 2) if (duration := mkwargs.get("duration")) else -1
 
@@ -348,7 +351,9 @@ class Uploader:
             if caption_link
             else f"<code>{mkwargs['file_name']}</code>"
         )
-        get_metadata(mkwargs[media_type], media_type, mkwargs)
+        size = mkwargs.pop("size", (1280, 720))
+        meta = get_metadata(mkwargs[media_type], media_type, size=size)
+        mkwargs |= meta
         uploaded = await client.send_audio(
             chat_id=self.log_group_id,
             caption=f"🎵  {caption}",

@@ -189,7 +189,7 @@ async def split_video(file_path, **kwargs: Any) -> List[Path]:
     return sorted(result)
 
 
-def get_metadata(media: str, media_type: str, info_dict: dict = None) -> dict:
+def get_metadata(media: str, media_type: str, size = None) -> dict:
     logger.info(f"Metadata: {media}")
     new_dict = {}
     _parser = createParser(str(Path(media).absolute()))
@@ -198,8 +198,6 @@ def get_metadata(media: str, media_type: str, info_dict: dict = None) -> dict:
         new_dict["duration"] = metadata.get("duration").seconds
 
     if media_type == "audio":
-        if info_dict:
-            info_dict.pop("size", None)
         if metadata.has("artist"):
             new_dict["performer"] = metadata.get("artist")
         if metadata.has("title"):
@@ -208,13 +206,7 @@ def get_metadata(media: str, media_type: str, info_dict: dict = None) -> dict:
         if not new_dict.get("thumb"):
             new_dict["thumb"] = thumb_from_audio(media)
     else:
-        if info_dict:
-            width, height = info_dict.pop("size", (1280, 720))
-        else:
-            width, height = 1280, 720
+        width, height = size or (1280, 720)
         new_dict["height"] = height
         new_dict["width"] = width
-    if info_dict:
-        info_dict |= new_dict
-    else:
-        return new_dict
+    return new_dict
