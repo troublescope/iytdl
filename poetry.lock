@@ -639,7 +639,7 @@ httpx = ">=0.14.2"
 
 [[package]]
 name = "yt-dlp"
-version = "2023.1.2"
+version = "2023.2.17"
 description = "A youtube-dl fork with additional features and patches"
 category = "main"
 optional = false
@@ -1607,6 +1607,6 @@ youtube-search-python = [
     {file = "youtube_search_python-1.6.6-py3-none-any.whl", hash = "sha256:f0d835278bc32335f2ded48ba119bef39cafb290d98648a64deb22f6c4a705f2"},
 ]
 yt-dlp = [
-    {file = "yt-dlp-2023.1.2.tar.gz", hash = "sha256:9a2ceb76a4cc48aa80127eff8a853d9c8b7efe8be121c2123dcbfd3d06bc945f"},
-    {file = "yt_dlp-2023.1.2-py2.py3-none-any.whl", hash = "sha256:b84f94a01b0a743c14607cc27840b5a09daba16005372cce747455d8ca2f25fd"},
+    {file = "yt-dlp-2023.2.17.tar.gz", hash = "sha256:9af92de5effc193bdb51216d9ebf28874d96180d202fae752b0d9f2a63380f3a"},
+    {file = "yt_dlp-2023.2.17-py2.py3-none-any.whl", hash = "sha256:3b2df037c80922f0f83f63ee2f9253496b4a8668c0fe8d2a836ba9040f853b07"},
 ]
