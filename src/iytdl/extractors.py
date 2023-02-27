@@ -1,6 +1,6 @@
 __all__ = ["Extractor"]
 
-import logging
+import logging, json
 
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
@@ -202,6 +202,7 @@ class Extractor:
                 fr_note = video.get("format_note")
                 fr_id = video.get("format_id")
                 fr_size = video.get("filesize")
+                logger.info(json.dumps(video, indent=3))
                 if video.get("ext") == "mp4":
                     for frmt_ in qual_list:
                         if fr_note in (frmt_, f"{frmt_}60"):
