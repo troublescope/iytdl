@@ -203,7 +203,7 @@ class Extractor:
                 fr_id = video.get("format_id")
                 fr_size = video.get("filesize")
                 # logger.info(json.dumps(video, indent=3))
-                if video.get("acodec") and video.get("vcodec") != "none":
+                if video.get("acodec") != "none" and video.get("vcodec") != "none":
                     for frmt_ in qual_list:
                         if fr_note in (frmt_, f"{frmt_}60"):
                             qual_dict[frmt_][fr_id] = fr_size
