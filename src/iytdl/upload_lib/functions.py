@@ -190,7 +190,7 @@ async def split_video(file_path, **kwargs: Any) -> List[Path]:
 
 
 def get_metadata(media: str, media_type: str, size = None) -> dict:
-    logger.info(f"Metadata: {media}")
+    # logger.info(f"Metadata: {media}")
     new_dict = {}
     _parser = createParser(str(Path(media).absolute()))
     metadata = extractMetadata(_parser)
