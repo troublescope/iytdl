@@ -194,6 +194,7 @@ def get_metadata(media: str, media_type: str, size = None) -> dict:
     new_dict = {}
     _parser = createParser(str(Path(media).absolute()))
     metadata = extractMetadata(_parser)
+    logger.info(f"Metadata Info: {metadata}")
     if metadata and metadata.has("duration"):
         new_dict["duration"] = metadata.get("duration").seconds
 
