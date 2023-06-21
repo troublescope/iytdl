@@ -29,6 +29,7 @@ classifiers = [
 python = ">=3.8,<4"
 youtube-search-python = "^1.4.9"
 Pillow = ">=9.5.0"
+Pyrogram = "^2.0.40"
 html-telegraph-poster = "^0.4.0"
 hachoir = "^3.1.2"
 mutagen = "^1.45.1"
