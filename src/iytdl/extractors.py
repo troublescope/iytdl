@@ -196,7 +196,7 @@ class Extractor:
         else:
             # ------------------------------------------------ #
             qual_dict = defaultdict(lambda: defaultdict(int))
-            qual_list = ("1440p", "1080p", "720p", "480p", "360p", "240p", "144p")
+            qual_list = ("2160", "1440p", "1080p", "720p", "480p", "360p", "240p", "144p")
             audio_dict: Dict[int, str] = {}
             # ------------------------------------------------ #
             for video in vid_data["formats"]:
