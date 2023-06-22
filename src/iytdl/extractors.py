@@ -189,6 +189,7 @@ class Extractor:
         params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent}
         try:
             vid_data = self.get_response(params, f"{YT_VID_URL}{yt_id}")
+            logger.info(vid_data)
         except ExtractorError:
             vid_data = None
             buttons += best_audio_btn
@@ -202,7 +203,6 @@ class Extractor:
                 fr_note = video.get("format_note")
                 fr_id = video.get("format_id")
                 fr_size = video.get("filesize")
-                logger.info(json.dumps(video, indent=3))
                 if video.get("acodec") != "none" and video.get("vcodec") != "none":
                     for frmt_ in qual_list:
                         if fr_note in (frmt_, f"{frmt_}60"):
