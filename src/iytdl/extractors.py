@@ -189,7 +189,6 @@ class Extractor:
         params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent}
         try:
             vid_data = self.get_response(params, f"{YT_VID_URL}{yt_id}")
-            logger.info(vid_data)
         except ExtractorError:
             vid_data = None
             buttons += best_audio_btn
@@ -203,16 +202,12 @@ class Extractor:
                 fr_note = video.get("format_note")
                 fr_id = video.get("format_id")
                 fr_size = video.get("filesize")
-                if video.get("acodec") != "none" and video.get("vcodec") != "none":
+                if video.get("ext") == "mp4":
                     for frmt_ in qual_list:
                         if fr_note in (frmt_, f"{frmt_}60"):
                             qual_dict[frmt_][fr_id] = fr_size
                 if str(video.get("acodec")).lower() != "none":
-                    bitrrate = video.get("abr")
-                    if bitrrate is not None:
-                        bitrrate = int(bitrrate)
-                    else:
-                        bitrrate = 0
+                    bitrrate = int(video.get("abr", 0))
                     if bitrrate != 0:
                         audio_dict[
                             bitrrate
