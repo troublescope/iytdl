@@ -201,8 +201,8 @@ def get_metadata(media: str, media_type: str, size = None) -> dict:
     if media_type == "audio":
         if metadata.has("artist"):
             new_dict["performer"] = metadata.get("artist")
-        if metadata.has("title"):
-            new_dict["title"] = metadata.get("title")
+        # if metadata.has("title"):
+        #    new_dict["title"] = metadata.get("title")
         # If Thumb doesn't exist then check for Album art
         if not new_dict.get("thumb"):
             new_dict["thumb"] = thumb_from_audio(media)
