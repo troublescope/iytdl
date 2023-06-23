@@ -202,7 +202,7 @@ class Extractor:
                 fr_note = video.get("format_note")
                 fr_id = video.get("format_id")
                 fr_size = video.get("filesize")
-                if video.get("ext") == "mp4":
+                if video.get("acodec") != "none" and video.get("vcodec") != "none":
                     for frmt_ in qual_list:
                         if fr_note in (frmt_, f"{frmt_}60"):
                             qual_dict[frmt_][fr_id] = fr_size
@@ -300,8 +300,8 @@ class Extractor:
                 # Merge best compatible audio with choosen video quality
                 if yt_url:
                     choice_str = (
-                       f"({choice_id}+(258/256/bestaudio[ext=?m4a])"
-                       f"/best[ext=mp4]/best)[ext!=?webm]{filesize_flt}"
+                        f"({choice_id}+(258/256/bestaudio[ext=?m4a]/bestaudio)"
+                        f"/best[ext=mp4]/best)[ext!=?webm]{filesize_flt}"
                     )
                 else:
                     choice_str = (
