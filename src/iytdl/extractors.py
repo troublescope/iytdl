@@ -300,8 +300,8 @@ class Extractor:
                 # Merge best compatible audio with choosen video quality
                 if yt_url:
                     choice_str = (
-                        f"({choice_id}+(258/256/bestaudio[ext=m4a]/bestaudio)"
-                        f"/best[ext=mp4]/best)[ext!=?webm]{filesize_flt}"
+                       f"({choice_id}+(258/256/bestaudio[ext=?m4a])"
+                       f"/best[ext=mp4]/best)[ext!=?webm]{filesize_flt}"
                     )
                 else:
                     choice_str = (
