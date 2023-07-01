@@ -37,7 +37,7 @@ class Downloader:
             "geo_bypass": True,
             "nocheckcertificate": True,
             "outtmpl": os.path.join(
-                str(self.download_path), rnd_key, "%(title)s-%(format)s.%(ext)s"
+                str(self.download_path), rnd_key, "%(title)s.%(ext)s"
             ),
             "logger": logger,
             "progress_hooks": [prog_func],
@@ -70,7 +70,7 @@ class Downloader:
     ) -> Union[int, str]:
         options = {
             "outtmpl": os.path.join(
-                str(self.download_path), rnd_key, "%(title)s-%(format)s.%(ext)s"
+                str(self.download_path), rnd_key, "%(title)s.%(ext)s"
             ),
             "logger": logger,
             "progress_hooks": [prog_func],
