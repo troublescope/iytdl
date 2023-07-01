@@ -35,6 +35,13 @@ from iytdl.utils import *  # noqa ignore=F405
 
 logger = logging.getLogger(__name__)
 
+sup_btn = [
+    [
+        InlineKeyboardButton(
+            "💠 Support Me 💠", url="https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg"
+        )
+    ]
+]
 
 class Uploader:
     async def find_media(
@@ -312,9 +319,10 @@ class Uploader:
 
         if not process.is_cancelled:
             if not is_split:
-                return await process.edit_media(
-                    __get_inputs(uploaded), reply_markup=None
+                await process.edit_media(
+                    __get_inputs(uploaded), reply_markup=sup_btn
                 )
+                return await process.delete()
             new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
             m = await process.edit(new_caption)
             uploads, child_up = [], []
@@ -370,16 +378,17 @@ class Uploader:
         await asyncio.sleep(2)
         if not process.is_cancelled:
             if uploaded.audio:
-                return await process.edit_media(
+                await process.edit_media(
                     media=InputMediaAudio(
                         uploaded.audio.file_id, caption=uploaded.caption.html
                     ),
-                    reply_markup=None,
+                    reply_markup=sup_btn,
                 )
             elif uploaded.document:
-                return await process.edit_media(
+                await process.edit_media(
                     media=InputMediaDocument(
                         uploaded.document.file_id, caption=uploaded.caption.html
                     ),
-                    reply_markup=None,
+                    reply_markup=sup_btn,
                 )
+        await process.delete()
