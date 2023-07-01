@@ -324,7 +324,7 @@ class Uploader:
                 await process.edit_media(
                     __get_inputs(uploaded), reply_markup=InlineKeyboardMarkup(sup_btn)
                 )
-                return await process.delete()
+                return await uploaded.delete()
             new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
             m = await process.edit(new_caption)
             uploads, child_up = [], []
@@ -393,4 +393,4 @@ class Uploader:
                     ),
                     reply_markup=InlineKeyboardMarkup(sup_btn),
                 )
-        await process.delete()
+        await uploaded.delete()
