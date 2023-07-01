@@ -57,7 +57,7 @@ class Extractor:
         err_btn = [
             [
                 InlineKeyboardButton(
-                    "ERROR", callback_data="errhrrr"
+                    "💔 ERROR", callback_data="errhrrr"
                 ),
             ]
         ]
@@ -68,10 +68,14 @@ class Extractor:
             #     json.dump(resp, fx, indent=4, sort_keys=True)
         except UnsupportedError:
             logger.error(f"[URL -> {url}] - is not NOT SUPPORTED")
-            return
+            return SearchResult(
+                key,
+                f"[URL -> {url}] - is not NOT SUPPORTED",
+                "https://telegra.ph/file/24cdb8f46063135d2d626.jpg",
+                InlineKeyboardMarkup(err_btn),
+            )
         except DownloadError as d_e:
             logger.error(f"[URL -> {url}] - {d_e}")
-            # TEss
             return SearchResult(
                 key,
                 f"[URL -> {url}] - {d_e}",
