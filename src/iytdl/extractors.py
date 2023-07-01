@@ -67,9 +67,7 @@ class Extractor:
             # TEss
             return SearchResult(
                 key,
-                "[No Information]",
-                self.default_thumb,
-                InlineKeyboardMarkup(buttons),
+                f"[URL -> {url}] - {d_e}",
             )
         except ExtractorError:
             logger.warning(f"[URL -> {url}] - Failed to Extract Info")
