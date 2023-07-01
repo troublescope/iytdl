@@ -16,6 +16,8 @@ from pyrogram.types import (
     InputMediaVideo,
     InputMediaAnimation,
     Message,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
 )
 from pathlib import Path
 
