@@ -54,6 +54,13 @@ class Extractor:
                 ),
             ]
         ]
+        err_btn = [
+            [
+                InlineKeyboardButton(
+                    "ERROR", callback_data="errhrrr"
+                ),
+            ]
+        ]
         params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent}
         try:
             resp = self.get_response(params, url)
@@ -68,8 +75,8 @@ class Extractor:
             return SearchResult(
                 key,
                 f"[URL -> {url}] - {d_e}",
-                None,
-                None,
+                "https://telegra.ph/file/24cdb8f46063135d2d626.jpg",
+                InlineKeyboardMarkup(err_btn),
             )
         except ExtractorError:
             logger.warning(f"[URL -> {url}] - Failed to Extract Info")
