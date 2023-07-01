@@ -322,7 +322,7 @@ class Uploader:
         if not process.is_cancelled:
             if not is_split:
                 await process.edit_media(
-                    __get_inputs(uploaded), reply_markup=sup_btn
+                    __get_inputs(uploaded), reply_markup=InlineKeyboardMarkup(sup_btn)
                 )
                 return await process.delete()
             new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
@@ -384,13 +384,13 @@ class Uploader:
                     media=InputMediaAudio(
                         uploaded.audio.file_id, caption=uploaded.caption.html
                     ),
-                    reply_markup=sup_btn,
+                    reply_markup=InlineKeyboardMarkup(sup_btn),
                 )
             elif uploaded.document:
                 await process.edit_media(
                     media=InputMediaDocument(
                         uploaded.document.file_id, caption=uploaded.caption.html
                     ),
-                    reply_markup=sup_btn,
+                    reply_markup=InlineKeyboardMarkup(sup_btn),
                 )
         await process.delete()
