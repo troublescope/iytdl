@@ -68,6 +68,8 @@ class Extractor:
             return SearchResult(
                 key,
                 f"[URL -> {url}] - {d_e}",
+                None,
+                None,
             )
         except ExtractorError:
             logger.warning(f"[URL -> {url}] - Failed to Extract Info")
