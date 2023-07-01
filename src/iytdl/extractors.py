@@ -64,7 +64,13 @@ class Extractor:
             return
         except DownloadError as d_e:
             logger.error(f"[URL -> {url}] - {d_e}")
-            return
+            # TEss
+            return SearchResult(
+                key,
+                "[No Information]",
+                self.default_thumb,
+                InlineKeyboardMarkup(buttons),
+            )
         except ExtractorError:
             logger.warning(f"[URL -> {url}] - Failed to Extract Info")
             return SearchResult(
