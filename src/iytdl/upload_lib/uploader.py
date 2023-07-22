@@ -9,6 +9,7 @@ from typing import Any, Dict, Literal, Optional, Union
 
 from pyrogram import Client
 from pyrogram.enums import ParseMode
+from pyrogram.errors import FloodWait
 from pyrogram.types import (
     CallbackQuery,
     InputMediaAudio,
@@ -321,9 +322,15 @@ class Uploader:
 
         if not process.is_cancelled:
             if not is_split:
-                await process.edit_media(
-                    __get_inputs(uploaded), reply_markup=InlineKeyboardMarkup(sup_btn)
-                )
+                try:
+                    await process.edit_media(
+                        __get_inputs(uploaded), reply_markup=InlineKeyboardMarkup(sup_btn)
+                    )
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    await process.edit_media(
+                        __get_inputs(uploaded), reply_markup=InlineKeyboardMarkup(sup_btn)
+                    )
                 return await uploaded.delete()
             new_caption = "**🗂 Files Splitted Because More Than 2GB**\n\n"
             m = await process.edit(new_caption)
@@ -380,17 +387,35 @@ class Uploader:
         await asyncio.sleep(2)
         if not process.is_cancelled:
             if uploaded.audio:
-                await process.edit_media(
-                    media=InputMediaAudio(
-                        uploaded.audio.file_id, caption=uploaded.caption.html
-                    ),
-                    reply_markup=InlineKeyboardMarkup(sup_btn),
-                )
+                try:
+                    await process.edit_media(
+                        media=InputMediaAudio(
+                            uploaded.audio.file_id, caption=uploaded.caption.html
+                        ),
+                        reply_markup=InlineKeyboardMarkup(sup_btn),
+                    )
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    await process.edit_media(
+                        media=InputMediaAudio(
+                            uploaded.audio.file_id, caption=uploaded.caption.html
+                        ),
+                        reply_markup=InlineKeyboardMarkup(sup_btn),
+                    )
             elif uploaded.document:
-                await process.edit_media(
-                    media=InputMediaDocument(
-                        uploaded.document.file_id, caption=uploaded.caption.html
-                    ),
-                    reply_markup=InlineKeyboardMarkup(sup_btn),
-                )
+                try:
+                    await process.edit_media(
+                        media=InputMediaDocument(
+                            uploaded.document.file_id, caption=uploaded.caption.html
+                        ),
+                        reply_markup=InlineKeyboardMarkup(sup_btn),
+                    )
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    await process.edit_media(
+                        media=InputMediaDocument(
+                            uploaded.document.file_id, caption=uploaded.caption.html
+                        ),
+                        reply_markup=InlineKeyboardMarkup(sup_btn),
+                    )
         await uploaded.delete()
