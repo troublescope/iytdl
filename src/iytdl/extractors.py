@@ -67,7 +67,6 @@ class Extractor:
             # with open("j_debug_data.json", "w") as fx:
             #     json.dump(resp, fx, indent=4, sort_keys=True)
         except UnsupportedError:
-            logger.error(f"[URL -> {url}] - is not NOT SUPPORTED")
             return SearchResult(
                 key,
                 f"[URL -> {url}] - is not NOT SUPPORTED",
@@ -75,7 +74,6 @@ class Extractor:
                 InlineKeyboardMarkup(err_btn),
             )
         except DownloadError as d_e:
-            logger.error(f"[URL -> {url}] - {d_e}")
             return SearchResult(
                 key,
                 f"[URL -> {url}] - {d_e}",
