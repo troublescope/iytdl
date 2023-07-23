@@ -62,6 +62,7 @@ class Downloader:
             "logtostderr": self.silent,
             "ffmpeg_location": self._ffmpeg,
             "ffprobe_location": self._ffmpeg,
+            "ignoreerrors": True,
         }
         return await self.ytdownloader(url, options)
 
@@ -99,6 +100,7 @@ class Downloader:
             "logtostderr": self.silent,
             "ffmpeg_location": self._ffmpeg,
             "ffprobe_location": self._ffmpeg,
+            "ignoreerrors": True,
         }
         return await self.ytdownloader(url, options)
 
