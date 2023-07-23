@@ -123,8 +123,8 @@ class Downloader:
                 "[GeoRestrictedError] : The uploader has not made this video"
                 " available in your country"
             )
-        except Exception:
-            logger.exception("Something Went Wrong")
+        except Exception as e:
+            logger.error(f"Something Went Wrong. ERROR: {e}")
 
     async def download(
         self,
@@ -170,7 +170,6 @@ class Downloader:
             # Only edit message once every 8 seconds to avoid ratelimits
 
             if process.is_cancelled:
-                logger.warning("Download process is Cancelled")
                 raise StopTransmission
 
             if prog_data.get("status") == "finished":
@@ -193,8 +192,8 @@ class Downloader:
                 if total is not None:
                     percentage = round(current / total * 100)
                     progress_bar = (
-                        f"[{'█' * floor(15 * percentage / 100)}"
-                        f"{'░' * floor(15 * (1 - percentage / 100))}]"
+                        f"[{'●' * floor(15 * percentage / 100)}"
+                        f"{'○' * floor(15 * (1 - percentage / 100))}]"
                     )
                     # ---------------------------------------- #
                     progress = f"""
