@@ -35,6 +35,7 @@ class Downloader:
         options = {
             "addmetadata": True,
             "geo_bypass": True,
+            "cookiefile": "cookies.txt",
             "nocheckcertificate": True,
             "outtmpl": os.path.join(
                 str(self.download_path), rnd_key, "%(title)s.%(ext)s"
@@ -79,6 +80,7 @@ class Downloader:
             "prefer_ffmpeg": True,
             "format": "bestaudio/best",
             "geo_bypass": True,
+            "cookiefile": "cookies.txt",
             "nocheckcertificate": True,
             "allow_multiple_video_streams": True,
             "allow_multiple_audio_streams": True,
