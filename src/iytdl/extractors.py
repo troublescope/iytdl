@@ -61,7 +61,7 @@ class Extractor:
                 ),
             ]
         ]
-        params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent}
+        params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent, "cookiefile": "cookies.txt",}
         try:
             resp = self.get_response(params, url)
             # with open("j_debug_data.json", "w") as fx:
@@ -201,7 +201,7 @@ class Extractor:
                 )
             ]
         ]
-        params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent}
+        params = {"no-playlist": True, "quiet": self.silent, "logtostderr": self.silent, "cookiefile": "cookies.txt"}
         try:
             vid_data = self.get_response(params, f"{YT_VID_URL}{yt_id}")
         except ExtractorError:
