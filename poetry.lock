@@ -1,21 +1,31 @@
 [[package]]
-name = "aiohttp"
-version = "3.9.5"
-description = "Async http client/server framework (asyncio)"
+name = "aiohappyeyeballs"
+version = "2.4.4"
+description = "Happy Eyeballs for asyncio"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 
+[[package]]
+name = "aiohttp"
+version = "3.11.10"
+description = "Async http client/server framework (asyncio)"
+category = "main"
+optional = false
+python-versions = ">=3.9"
+
 [package.dependencies]
+aiohappyeyeballs = ">=2.3.0"
 aiosignal = ">=1.1.2"
-async-timeout = {version = ">=4.0,<5.0", markers = "python_version < \"3.11\""}
+async-timeout = {version = ">=4.0,<6.0", markers = "python_version < \"3.11\""}
 attrs = ">=17.3.0"
 frozenlist = ">=1.1.1"
 multidict = ">=4.5,<7.0"
-yarl = ">=1.0,<2.0"
+propcache = ">=0.2.0"
+yarl = ">=1.17.0,<2.0"
 
 [package.extras]
-speedups = ["brotlicffi", "brotli", "aiodns"]
+speedups = ["aiodns (>=3.2.0)", "brotli", "brotlicffi"]
 
 [[package]]
 name = "aiosignal"
@@ -41,22 +51,22 @@ typing_extensions = ">=3.7.2"
 
 [[package]]
 name = "anyio"
-version = "4.4.0"
+version = "4.7.0"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
 category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 
 [package.dependencies]
 exceptiongroup = {version = ">=1.0.2", markers = "python_version < \"3.11\""}
 idna = ">=2.8"
 sniffio = ">=1.1"
-typing-extensions = {version = ">=4.1", markers = "python_version < \"3.11\""}
+typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 
 [package.extras]
-doc = ["packaging", "Sphinx (>=7)", "sphinx-rtd-theme", "sphinx-autodoc-typehints (>=1.2.0)"]
-test = ["anyio", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypothesis (>=4.0)", "psutil (>=5.9)", "pytest (>=7.0)", "pytest-mock (>=3.6.1)", "trustme", "uvloop (>=0.17)"]
-trio = ["trio (>=0.23)"]
+trio = ["trio (>=0.26.1)"]
+test = ["anyio", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypothesis (>=4.0)", "psutil (>=5.9)", "pytest (>=7.0)", "pytest-mock (>=3.6.1)", "trustme", "truststore (>=0.9.1)", "uvloop (>=0.21)"]
+doc = ["packaging", "Sphinx (>=7.4,<8.0)", "sphinx-rtd-theme", "sphinx-autodoc-typehints (>=1.2.0)"]
 
 [[package]]
 name = "appdirs"
@@ -68,11 +78,11 @@ python-versions = "*"
 
 [[package]]
 name = "async-timeout"
-version = "4.0.3"
+version = "5.0.1"
 description = "Timeout context manager for asyncio programs"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [[package]]
 name = "atomicwrites"
@@ -84,19 +94,19 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "attrs"
-version = "23.2.0"
+version = "24.2.0"
 description = "Classes Without Boilerplate"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-cov = ["attrs", "coverage[toml] (>=5.3)"]
-dev = ["attrs", "pre-commit"]
-docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope-interface"]
-tests = ["attrs", "zope-interface"]
-tests-mypy = ["mypy (>=1.6)", "pytest-mypy-plugins"]
-tests-no-zope = ["attrs", "cloudpickle", "hypothesis", "pympler", "pytest-xdist", "pytest (>=4.3.0)"]
+benchmark = ["cloudpickle", "hypothesis", "mypy (>=1.11.1)", "pympler", "pytest-codspeed", "pytest-mypy-plugins", "pytest-xdist", "pytest (>=4.3.0)"]
+cov = ["cloudpickle", "coverage[toml] (>=5.3)", "hypothesis", "mypy (>=1.11.1)", "pympler", "pytest-mypy-plugins", "pytest-xdist", "pytest (>=4.3.0)"]
+dev = ["cloudpickle", "hypothesis", "mypy (>=1.11.1)", "pre-commit", "pympler", "pytest-mypy-plugins", "pytest-xdist", "pytest (>=4.3.0)"]
+docs = ["cogapp", "furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier (<24.7)"]
+tests = ["cloudpickle", "hypothesis", "mypy (>=1.11.1)", "pympler", "pytest-mypy-plugins", "pytest-xdist", "pytest (>=4.3.0)"]
+tests-mypy = ["mypy (>=1.11.1)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "autoflake"
@@ -145,46 +155,16 @@ colorama = ["colorama (>=0.4.3)"]
 d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
-name = "brotli"
-version = "1.1.0"
-description = "Python bindings for the Brotli compression library"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
-name = "brotlicffi"
-version = "1.1.0.0"
-description = "Python CFFI bindings to the Brotli library"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-cffi = ">=1.0.0"
-
-[[package]]
 name = "certifi"
-version = "2024.7.4"
+version = "2024.8.30"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [[package]]
-name = "cffi"
-version = "1.16.0"
-description = "Foreign Function Interface for Python calling C code."
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-pycparser = "*"
-
-[[package]]
 name = "charset-normalizer"
-version = "3.3.2"
+version = "3.4.0"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
 category = "main"
 optional = false
@@ -222,7 +202,7 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "frozenlist"
-version = "1.4.1"
+version = "1.5.0"
 description = "A list-like structure which implements collections.abc.MutableSequence"
 category = "main"
 optional = false
@@ -263,7 +243,7 @@ requests-toolbelt = "*"
 
 [[package]]
 name = "httpcore"
-version = "1.0.5"
+version = "1.0.7"
 description = "A minimal low-level HTTP client."
 category = "main"
 optional = false
@@ -277,11 +257,11 @@ h11 = ">=0.13,<0.15"
 asyncio = ["anyio (>=4.0,<5.0)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (>=1.0.0,<2.0.0)"]
-trio = ["trio (>=0.22.0,<0.26.0)"]
+trio = ["trio (>=0.22.0,<1.0)"]
 
 [[package]]
 name = "httpx"
-version = "0.27.0"
+version = "0.28.1"
 description = "The next generation HTTP client."
 category = "main"
 optional = false
@@ -292,21 +272,24 @@ anyio = "*"
 certifi = "*"
 httpcore = ">=1.0.0,<2.0.0"
 idna = "*"
-sniffio = "*"
 
 [package.extras]
 brotli = ["brotli", "brotlicffi"]
 cli = ["click (>=8.0.0,<9.0.0)", "pygments (>=2.0.0,<3.0.0)", "rich (>=10,<14)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (>=1.0.0,<2.0.0)"]
+zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "idna"
-version = "3.7"
+version = "3.10"
 description = "Internationalized Domain Names in Applications (IDNA)"
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
+
+[package.extras]
+all = ["ruff (>=0.6.2)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "flake8 (>=7.1.1)"]
 
 [[package]]
 name = "isort"
@@ -321,7 +304,7 @@ colors = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "lxml"
-version = "5.2.2"
+version = "5.3.0"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
 category = "main"
 optional = false
@@ -332,11 +315,11 @@ cssselect = ["cssselect (>=0.7)"]
 html5 = ["html5lib"]
 html-clean = ["lxml-html-clean"]
 htmlsoup = ["beautifulsoup4"]
-source = ["Cython (>=3.0.10)"]
+source = ["Cython (>=3.0.11)"]
 
 [[package]]
 name = "more-itertools"
-version = "10.3.0"
+version = "10.5.0"
 description = "More routines for operating on iterables, beyond itertools"
 category = "dev"
 optional = false
@@ -344,11 +327,14 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "multidict"
-version = "6.0.5"
+version = "6.1.0"
 description = "multidict implementation"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
+
+[package.dependencies]
+typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "mutagen"
@@ -368,7 +354,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "packaging"
-version = "24.1"
+version = "24.2"
 description = "Core utilities for Python packages"
 category = "dev"
 optional = false
@@ -384,14 +370,14 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "pillow"
-version = "10.4.0"
+version = "11.0.0"
 description = "Python Imaging Library (Fork)"
 category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 
 [package.extras]
-docs = ["furo", "olefile", "sphinx (>=7.3)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinxext-opengraph"]
+docs = ["furo", "olefile", "sphinx (>=8.1)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinxext-opengraph"]
 fpx = ["olefile"]
 mic = ["olefile"]
 tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
@@ -408,6 +394,14 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
 dev = ["pre-commit", "tox"]
+
+[[package]]
+name = "propcache"
+version = "0.2.1"
+description = "Accelerated property cache"
+category = "main"
+optional = false
+python-versions = ">=3.9"
 
 [[package]]
 name = "py"
@@ -427,27 +421,11 @@ python-versions = "*"
 
 [[package]]
 name = "pycodestyle"
-version = "2.12.0"
+version = "2.12.1"
 description = "Python style guide checker"
 category = "dev"
 optional = false
 python-versions = ">=3.8"
-
-[[package]]
-name = "pycparser"
-version = "2.22"
-description = "C parser in Python"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[[package]]
-name = "pycryptodomex"
-version = "3.20.0"
-description = "Cryptographic library for Python"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "pyflakes"
@@ -459,19 +437,19 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "pymediainfo-pyrofork"
-version = "6.0.1"
+version = "6.0.2"
 description = "A Python wrapper for the mediainfo library."
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.9"
 
 [[package]]
 name = "pyrofork"
-version = "2.3.37"
+version = "2.3.52"
 description = "Fork of pyrogram. Elegant, modern and asynchronous Telegram MTProto API framework in Python for users and bots"
 category = "main"
 optional = false
-python-versions = "~=3.8"
+python-versions = "~=3.9"
 
 [package.dependencies]
 pyaes = "1.6.1"
@@ -480,7 +458,7 @@ pysocks = "1.7.1"
 
 [package.extras]
 dev = ["hatch (>=1.7.0)", "pytest-asyncio (>=0.21.1)", "pytest-cov (>=4.1.0)", "pytest (>=7.4.3)", "twine (>=4.0.2)"]
-docs = ["sphinx", "sphinx-autobuild", "sphinx-copybutton", "sphinx-immaterial (==0.12.0)", "tornado (>=6.3.3)"]
+docs = ["sphinx", "sphinx-autobuild", "sphinx-copybutton", "sphinx-immaterial (==0.12.4)", "tornado (>=6.3.3)"]
 speedup = ["tgcrypto-pyrofork (>=1.2.6)", "uvloop (>=0.19.0)"]
 
 [[package]]
@@ -515,7 +493,7 @@ testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xm
 
 [[package]]
 name = "regex"
-version = "2024.7.24"
+version = "2024.11.6"
 description = "Alternative regular expression module, to replace re."
 category = "dev"
 optional = false
@@ -576,11 +554,11 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "tomli"
-version = "2.0.1"
+version = "2.2.1"
 description = "A lil' TOML parser"
 category = "dev"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [[package]]
 name = "typed-ast"
@@ -600,7 +578,7 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "urllib3"
-version = "2.2.2"
+version = "2.2.3"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
@@ -621,24 +599,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "websockets"
-version = "12.0"
-description = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[[package]]
 name = "yarl"
-version = "1.9.4"
+version = "1.18.3"
 description = "Yet another URL library"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.9"
 
 [package.dependencies]
 idna = ">=2.0"
 multidict = ">=4.0"
+propcache = ">=0.2.0"
 
 [[package]]
 name = "youtube-search-python"
@@ -653,38 +624,29 @@ httpx = ">=0.14.2"
 
 [[package]]
 name = "yt-dlp"
-version = "2024.7.25"
+version = "2024.12.6"
 description = "A feature-rich command-line audio/video downloader"
 category = "main"
 optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-brotli = {version = "*", markers = "implementation_name == \"cpython\""}
-brotlicffi = {version = "*", markers = "implementation_name != \"cpython\""}
-certifi = "*"
-mutagen = "*"
-pycryptodomex = "*"
-requests = ">=2.32.2,<3"
-urllib3 = ">=1.26.17,<3"
-websockets = ">=12.0"
+python-versions = ">=3.9"
 
 [package.extras]
 build = ["build", "hatchling", "pip", "setuptools (>=71.0.2)", "wheel"]
-curl-cffi = ["curl-cffi (>=0.5.10,<0.6.0 || >=0.7.0,<0.8)", "curl-cffi (==0.5.10)"]
-dev = ["autopep8 (>=2.0,<3.0)", "pre-commit", "pytest (>=8.1,<9.0)", "ruff (>=0.5.0,<0.6.0)"]
-py2exe = ["py2exe (>=0.12)"]
-pyinstaller = ["pyinstaller (>=6.7.0)"]
+curl-cffi = ["curl-cffi (>=0.5.10,<0.6.0 || >=0.7.0,<0.7.2)", "curl-cffi (==0.5.10)"]
+default = ["brotli", "brotlicffi", "certifi", "mutagen", "pycryptodomex", "requests (>=2.32.2,<3)", "urllib3 (>=1.26.17,<3)", "websockets (>=13.0)"]
+dev = ["autopep8 (>=2.0,<3.0)", "pre-commit", "pytest-rerunfailures (>=14.0,<15.0)", "pytest (>=8.1,<9.0)", "ruff (>=0.8.0,<0.9.0)"]
+pyinstaller = ["pyinstaller (>=6.11.1)"]
 secretstorage = ["cffi", "secretstorage"]
-static-analysis = ["autopep8 (>=2.0,<3.0)", "ruff (>=0.5.0,<0.6.0)"]
-test = ["pytest (>=8.1,<9.0)"]
+static-analysis = ["autopep8 (>=2.0,<3.0)", "ruff (>=0.8.0,<0.9.0)"]
+test = ["pytest-rerunfailures (>=14.0,<15.0)", "pytest (>=8.1,<9.0)"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.8,<3.13"
-content-hash = "ab54854bcec5911215912b1801918091d0051c9222aa6c86ea9ed89ba987cbc7"
+python-versions = ">=3.9,<3.14"
+content-hash = "a3ef5b59950d055fc3e376df54c360072a327341ec797dbf8fc741e0d5dcc47d"
 
 [metadata.files]
+aiohappyeyeballs = []
 aiohttp = []
 aiosignal = []
 aiosqlite = []
@@ -696,10 +658,7 @@ attrs = []
 autoflake = []
 autopep8 = []
 black = []
-brotli = []
-brotlicffi = []
 certifi = []
-cffi = []
 charset-normalizer = []
 click = []
 colorama = []
@@ -721,11 +680,10 @@ packaging = []
 pathspec = []
 pillow = []
 pluggy = []
+propcache = []
 py = []
 pyaes = []
 pycodestyle = []
-pycparser = []
-pycryptodomex = []
 pyflakes = []
 pymediainfo-pyrofork = []
 pyrofork = []
@@ -742,7 +700,6 @@ typed-ast = []
 typing-extensions = []
 urllib3 = []
 wcwidth = []
-websockets = []
 yarl = []
 youtube-search-python = []
 yt-dlp = []
